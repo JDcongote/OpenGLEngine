@@ -197,7 +197,7 @@ int Procedural::render_loop() {
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
 	// LIGHT
-	const float light_position_world[] = { 10.0f, 10.0f, 10.0f };
+	const float light_position_world[] = { 10.0f, 10.0f, 10.0f }; 
 	Matrix4f mat4 = Matrix4f();
 	//keep track of this variable, returns -1 if not found to be active
 	GLuint model_matrix = glGetUniformLocation(shader_program.program_index, "model");

@@ -36,3 +36,11 @@
 *.pdb
 
 Debug/
+
+*.tlog
+
+*.ilk
+
+*.idb
+
+Procedural/gl\.log
