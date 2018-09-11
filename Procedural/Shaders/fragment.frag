@@ -2,7 +2,7 @@
 #version 400
 
 //in vec3 color;
-in vec3 light_pos, color, position_eye, normal_eye;
+in vec3 light_pos, color, position_eye, normal_eye, normals;
 in mat4 view_mat;
 
 out vec4 fragment_color;
@@ -30,15 +30,19 @@ void main() {
 	vec3 direction_to_light = normalize(distance_to_light);
 	float dot_pr = dot(direction_to_light, normal_eye);
 	dot_pr = max(dot_pr, 0.0);
+
 	// diffuse intensity
 	vec3 Id = Ld * Kd * dot_pr;
+
 	// Specular intensity
-	vec3 reflection_eye = reflect(-direction_to_light, normal_eye);
 	vec3 surface_to_eye = normalize(-position_eye);
-	float dot_specular = dot(reflection_eye, surface_to_eye);
-	dot_specular = max(dot_specular, 0.0);
+	//Bling extension
+	vec3 half_way_eye = normalize(surface_to_eye + direction_to_light);
+
+	float dot_specular = max(0.0,dot(half_way_eye, normal_eye));
 	float spec_factor = pow(dot_specular, specular_exponent);
-	vec3 Is = Ls*Ks*spec_factor;
+
+	vec3 Is = Ls * Ks * spec_factor;
 
 
     fragment_color = vec4(Is + Id + Ia, 1.0);

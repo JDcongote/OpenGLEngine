@@ -77,10 +77,10 @@ void glfw_error_callback(int error, const char* description) {
 
 std::string  load_shader(std::string name) {
 	std::string shader;
-	
+
 	name = "Shaders/" + name;
 	std::string line;
-	std::ifstream file (name);
+	std::ifstream file(name);
 	if (file.is_open()) {
 		while (getline(file, line)) {
 			shader += line + '\n';
@@ -89,7 +89,7 @@ std::string  load_shader(std::string name) {
 	gl_log("\nSHADER: read shader: \n");
 	gl_log(name.c_str());
 	gl_log("\n");
-	
+
 	return shader;
 }
 
@@ -111,20 +111,20 @@ void _print_shader_program_log(GLuint program) {
 
 const char* GL_type_to_string(GLenum type) {
 	switch (type) {
-		case GL_BOOL: return "bool";
-		case GL_INT: return "int";
-		case GL_FLOAT: return "float";
-		case GL_FLOAT_VEC2: return "vec2";
-		case GL_FLOAT_VEC3: return "vec3";
-		case GL_FLOAT_VEC4: return "vec4";
-		case GL_FLOAT_MAT2: return "mat2";
-		case GL_FLOAT_MAT3: return "mat3";
-		case GL_FLOAT_MAT4: return "mat4";
-		case GL_SAMPLER_2D: return "sampler2D";
-		case GL_SAMPLER_3D: return "sampler3D";
-		case GL_SAMPLER_CUBE: return "samplerCube";
-		case GL_SAMPLER_2D_SHADOW: return "sampler2DShadow";
-		default: break;
+	case GL_BOOL: return "bool";
+	case GL_INT: return "int";
+	case GL_FLOAT: return "float";
+	case GL_FLOAT_VEC2: return "vec2";
+	case GL_FLOAT_VEC3: return "vec3";
+	case GL_FLOAT_VEC4: return "vec4";
+	case GL_FLOAT_MAT2: return "mat2";
+	case GL_FLOAT_MAT3: return "mat3";
+	case GL_FLOAT_MAT4: return "mat4";
+	case GL_SAMPLER_2D: return "sampler2D";
+	case GL_SAMPLER_3D: return "sampler3D";
+	case GL_SAMPLER_CUBE: return "samplerCube";
+	case GL_SAMPLER_2D_SHADOW: return "sampler2DShadow";
+	default: break;
 	}
 	return "other";
 }
@@ -156,7 +156,7 @@ void _print_all_shader_info(GLuint program) {
 
 				int location = glGetAttribLocation(program, long_name);
 				gl_log("  (%i) type: %s name: '%s' location: %i\n", i, GL_type_to_string(type), long_name, location);
-			}			
+			}
 		}
 		else {
 			int location = glGetAttribLocation(program, name);
@@ -270,7 +270,7 @@ GLuint reload_shaders(GLuint program) {
 				pos++;
 			}
 			if (source[j] == '\n') {
-				shader_name[pos-1] = '\0';
+				shader_name[pos - 1] = '\0';
 				break;
 			}
 		}
@@ -278,7 +278,7 @@ GLuint reload_shaders(GLuint program) {
 		glAttachShader(new_program, reloaded_shader);
 		glDeleteShader(reloaded_shader);
 	}
-	glLinkProgram(new_program);	
+	glLinkProgram(new_program);
 	if (_is_valid(new_program)) {
 		glDeleteProgram(program);
 		return new_program;
@@ -290,7 +290,7 @@ GLuint reload_shaders(GLuint program) {
 		check_link_errors(new_program);
 		return program;
 	}
-	
+
 }
 bool should_move_camera = false;
 double prev_xpos, prev_ypos;
@@ -302,7 +302,7 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 		should_move_camera = true;
 		raycaster.raycast();
 	}
-	else if(button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
+	else if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE) {
 		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 		should_move_camera = false;
 	}
@@ -324,17 +324,17 @@ static void cursor_pos_callback(GLFWwindow* window, double xpos, double ypos)
 }
 
 std::vector<GLfloat> calculate_normals(const float* points, const int size) {
-	std::vector<Vector3f> vec_array(size/3);
+	std::vector<Vector3f> vec_array(size / 3);
 	std::vector<Vector3f> normals;
 	std::vector<GLfloat> final_normals(size);
 
-	for (int i = 0; i < size/3; i++) {
-		Vector3f vec = Vector3f(points[i*3], points[i*3+1], points[i*3+2]);
+	for (int i = 0; i < size / 3; i++) {
+		Vector3f vec = Vector3f(points[i * 3], points[i * 3 + 1], points[i * 3 + 2]);
 		vec_array[i] = vec;
 	}
 	//not the best way but its only for development purposes
-	int limit = (size/3) - 2; //loop run once per triangle, two triangles per face
-	for (int i = 0; i < limit; i+=3)
+	int limit = (size / 3) - 2; //loop run once per triangle, two triangles per face
+	for (int i = 0; i < limit; i += 3)
 	{
 		Vector3f p0 = Vector3f(points[i * 3], points[i * 3 + 1], points[i * 3 + 2]);
 		Vector3f p1 = Vector3f(points[i * 3 + 3], points[i * 3 + 4], points[i * 3 + 5]);
@@ -342,19 +342,19 @@ std::vector<GLfloat> calculate_normals(const float* points, const int size) {
 
 		Vector3f edge_1 = (p1 - p2).normalize();
 		Vector3f edge_2 = (p2 - p0).normalize();
-		Vector3f normal =  edge_1 * edge_2;	
+		Vector3f normal = edge_1 * edge_2;
 		normals.push_back(normal);
 	}
 	int j = 0;
 	limit = 9;
-	for (int i = 0; i < normals.size(); i++) {		
-		for (j; j < limit; j+=3) {
-			final_normals[j] = normals[i].x;
-			final_normals[j + 1] = normals[i].y;
-			final_normals[j + 2] = normals[i].z;
+	for (int i = 0; i < normals.size(); i++) {
+		for (j; j < limit; j += 3) {
+			final_normals[j] = normals[i].x * -1;
+			final_normals[j + 1] = normals[i].y * -1;
+			final_normals[j + 2] = normals[i].z * -1;
 		}
 		limit += 9;
-	}	
+	}
 	return final_normals;
 }
 
@@ -399,8 +399,8 @@ int main(void)
 	}
 
 	// Our camera
-	
-	
+
+
 
 	glfwMakeContextCurrent(window);
 
@@ -410,7 +410,7 @@ int main(void)
 
 	if (error != GL_NO_ERROR)
 	{
-		fprintf(stderr,"OpenGL Error: %i", error);
+		fprintf(stderr, "OpenGL Error: %i", error);
 	}
 
 	GLenum glewinit = glewInit();
@@ -425,52 +425,52 @@ int main(void)
 	glDepthFunc(GL_LESS);
 
 	Matrix4f mat4 = Matrix4f();
-	
+
 
 	GLfloat points[] = {
-		-1.0f,-1.0f,-1.0f, // triangle 1 : begin
-	-1.0f,-1.0f, 1.0f,
-	-1.0f, 1.0f, 1.0f, // triangle 1 : end
-	1.0f, 1.0f,-1.0f, // triangle 2 : begin
-	-1.0f,-1.0f,-1.0f,
-	-1.0f, 1.0f,-1.0f, // triangle 2 : end
-	1.0f,-1.0f, 1.0f,
-	-1.0f,-1.0f,-1.0f,
-	1.0f,-1.0f,-1.0f,
-	1.0f, 1.0f,-1.0f,
-	1.0f,-1.0f,-1.0f,
-	-1.0f,-1.0f,-1.0f,
-	-1.0f,-1.0f,-1.0f,
-	-1.0f, 1.0f, 1.0f,
-	-1.0f, 1.0f,-1.0f,
-	1.0f,-1.0f, 1.0f,
-	-1.0f,-1.0f, 1.0f,
-	-1.0f,-1.0f,-1.0f,
-	-1.0f, 1.0f, 1.0f,
-	-1.0f,-1.0f, 1.0f,
-	1.0f,-1.0f, 1.0f,
-	1.0f, 1.0f, 1.0f,
-	1.0f,-1.0f,-1.0f,
-	1.0f, 1.0f,-1.0f,
-	1.0f,-1.0f,-1.0f,
-	1.0f, 1.0f, 1.0f,
-	1.0f,-1.0f, 1.0f,
-	1.0f, 1.0f, 1.0f,
-	1.0f, 1.0f,-1.0f,
-	-1.0f, 1.0f,-1.0f,
-	1.0f, 1.0f, 1.0f,
-	-1.0f, 1.0f,-1.0f,
-	-1.0f, 1.0f, 1.0f,
-	1.0f, 1.0f, 1.0f,
-	-1.0f, 1.0f, 1.0f,
-	1.0f,-1.0f, 1.0f
+		/*FRONT SIDE*/
+		-1.0f, 1.0f, 1.0f,
+		1.0f,-1.0f, 1.0f,
+		-1.0f, -1.0f, 1.0f,
+		1.0f,-1.0f, 1.0f,
+		-1.0f, 1.0f, 1.0f,
+		1.0f, 1.0f, 1.0f,
+		/*RIGHT SIDE*/
+		1.0f, 1.0f,-1.0f,
+		1.0f,-1.0f,-1.0f,
+		1.0f, 1.0f, 1.0f,
+		1.0f,-1.0f, 1.0f,
+		1.0f, 1.0f, 1.0f,
+		1.0f,-1.0f,-1.0f,
+		/*TOP SIDE*/
+		-1.0f, 1.0f,-1.0f,
+		1.0f, 1.0f,-1.0f,
+		1.0f, 1.0f, 1.0f,
+		-1.0f, 1.0f, 1.0f,
+		-1.0f, 1.0f,-1.0f,
+		1.0f, 1.0f, 1.0f,
+		/*SIDE1*/
+		-1.0f, 1.0f, 1.0f,
+		-1.0f,-1.0f, 1.0f,
+		-1.0f,-1.0f,-1.0f,
+		-1.0f, 1.0f,-1.0f,
+		-1.0f, 1.0f, 1.0f,
+		-1.0f,-1.0f,-1.0f,
+		/*SIDE 2*/
+		-1.0f, 1.0f,-1.0f,
+		-1.0f,-1.0f,-1.0f,
+		1.0f, 1.0f,-1.0f,
+		-1.0f,-1.0f,-1.0f,
+		1.0f,-1.0f,-1.0f,
+		1.0f, 1.0f,-1.0f,
+		/*SIDE 3*/
+		1.0f,-1.0f,-1.0f,
+		-1.0f,-1.0f,-1.0f,
+		1.0f,-1.0f, 1.0f,
+		-1.0f,-1.0f,-1.0f,
+		-1.0f,-1.0f, 1.0f,
+		1.0f,-1.0f, 1.0f,		
 	};
-	
-	/*GLfloat normals[] = {
-	  0.0f, 0.0f,  1.0f,
-	  0.0f, 0.0f,  1.0f,
-	  0.0f, 0.0f,  1.0f,
-	};*/
 
 	std::vector<GLfloat> normals = calculate_normals(points, std::size(points));
 
@@ -492,12 +492,12 @@ int main(void)
 	glBindBuffer(GL_ARRAY_BUFFER, points_vbo);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 	glBindBuffer(GL_ARRAY_BUFFER, normals_vbo);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, NULL);	
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
 
 	// Define simple shaders
-	
+
 	GLuint v_shader_gl = create_shader("vertex.vert", GL_VERTEX_SHADER);
 	GLuint f_shader_gl = create_shader("fragment.frag", GL_FRAGMENT_SHADER);
 
@@ -525,11 +525,11 @@ int main(void)
 	glUniformMatrix4fv(view_matrix, 1, GL_FALSE, camera.get_view_matrix().get_as_array());
 	glUniformMatrix4fv(proj_matrix, 1, GL_FALSE, camera.get_projection_matrix().get_as_array());
 
-	GLuint current_program = -1;		
+	GLuint current_program = -1;
 
 	//callbacks
 	glfwSetMouseButtonCallback(window, mouse_button_callback);
-	glfwSetCursorPosCallback(window, cursor_pos_callback);	
+	glfwSetCursorPosCallback(window, cursor_pos_callback);
 
 	// LIGHT
 	const float light_position_world[] = { 10.0f, 10.0f, 10.0f };
@@ -541,7 +541,7 @@ int main(void)
 		double elapsed_seconds = current_seconds - previous_seconds;
 		previous_seconds = current_seconds;
 
-		
+
 		// Clear bits
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
@@ -551,19 +551,20 @@ int main(void)
 		// Expensive function!
 		if (camera.should_update) {
 			camera.should_update = false;
+			
 			glUniformMatrix4fv(model_matrix, 1, GL_FALSE, mat4.get_as_array());
 			glUniformMatrix4fv(view_matrix, 1, GL_FALSE, camera.get_view_matrix().get_as_array());
-			glUniformMatrix4fv(proj_matrix, 1, GL_FALSE, camera.get_projection_matrix().get_as_array());	
+			glUniformMatrix4fv(proj_matrix, 1, GL_FALSE, camera.get_projection_matrix().get_as_array());
 			glUniform3fv(light_position, 1, light_position_world);
-		}		
+		}
 
 		glBindVertexArray(vao);
-		
-		//glEnable(GL_CULL_FACE);
+
+		glEnable(GL_CULL_FACE);
 		glCullFace(GL_BACK);
 		glFrontFace(GL_CW);
 
-		glDrawArrays(GL_TRIANGLES, 0, 12*3);		
+		glDrawArrays(GL_TRIANGLES, 0, 12 * 3);
 
 		glfwSwapBuffers(window);
 
@@ -573,7 +574,7 @@ int main(void)
 		}
 
 		if (glfwGetKey(window, GLFW_KEY_D)) {
-			camera.translate(TRANSLATE_RIGHT,-(elapsed_seconds));
+			camera.translate(TRANSLATE_RIGHT, -(elapsed_seconds));
 			camera.should_update = true;
 		}
 		if (glfwGetKey(window, GLFW_KEY_A)) {
@@ -603,6 +604,7 @@ int main(void)
 		if (GLFW_PRESS == glfwGetKey(window, GLFW_KEY_R)) {
 			current_program = reload_shaders(current_program);
 			shader_program = current_program;
+			camera.should_update = true;
 		}
 		Vector3f ray_world = raycaster.get_ray_world();
 		float points[] = {

@@ -1,1 +1,11 @@
-﻿  Procedural.vcxproj -> D:\Dev\Procedural\Debug\Procedural.exe
+﻿  main.cpp
+d:\dev\procedural\procedural\main.cpp(313): warning C4244: 'argument': conversion from 'double' to 'const float', possible loss of data
+d:\dev\procedural\procedural\main.cpp(317): warning C4244: 'argument': conversion from 'double' to 'const float', possible loss of data
+d:\dev\procedural\procedural\main.cpp(350): warning C4018: '<': signed/unsigned mismatch
+d:\dev\procedural\procedural\main.cpp(577): warning C4244: 'argument': conversion from 'double' to 'const float', possible loss of data
+d:\dev\procedural\procedural\main.cpp(581): warning C4244: 'argument': conversion from 'double' to 'const float', possible loss of data
+d:\dev\procedural\procedural\main.cpp(585): warning C4244: 'argument': conversion from 'double' to 'const float', possible loss of data
+d:\dev\procedural\procedural\main.cpp(589): warning C4244: 'argument': conversion from 'double' to 'const float', possible loss of data
+d:\dev\procedural\procedural\main.cpp(593): warning C4244: 'argument': conversion from 'double' to 'const float', possible loss of data
+d:\dev\procedural\procedural\main.cpp(597): warning C4244: 'argument': conversion from 'double' to 'const float', possible loss of data
+  Procedural.vcxproj -> D:\Dev\Procedural\Debug\Procedural.exe
