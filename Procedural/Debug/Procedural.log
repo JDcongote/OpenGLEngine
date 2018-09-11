@@ -1,11 +1,14 @@
-﻿  main.cpp
-d:\dev\procedural\procedural\main.cpp(313): warning C4244: 'argument': conversion from 'double' to 'const float', possible loss of data
-d:\dev\procedural\procedural\main.cpp(317): warning C4244: 'argument': conversion from 'double' to 'const float', possible loss of data
-d:\dev\procedural\procedural\main.cpp(350): warning C4018: '<': signed/unsigned mismatch
-d:\dev\procedural\procedural\main.cpp(577): warning C4244: 'argument': conversion from 'double' to 'const float', possible loss of data
-d:\dev\procedural\procedural\main.cpp(581): warning C4244: 'argument': conversion from 'double' to 'const float', possible loss of data
-d:\dev\procedural\procedural\main.cpp(585): warning C4244: 'argument': conversion from 'double' to 'const float', possible loss of data
-d:\dev\procedural\procedural\main.cpp(589): warning C4244: 'argument': conversion from 'double' to 'const float', possible loss of data
-d:\dev\procedural\procedural\main.cpp(593): warning C4244: 'argument': conversion from 'double' to 'const float', possible loss of data
-d:\dev\procedural\procedural\main.cpp(597): warning C4244: 'argument': conversion from 'double' to 'const float', possible loss of data
+﻿  Procedural.cpp
+d:\dev\procedural\procedural\log\log.h(15): warning C4091: 'static ': ignored on left of 'Log' when no variable is declared
+d:\dev\procedural\procedural\procedural.h(15): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+d:\dev\procedural\procedural\procedural.cpp(46): warning C4018: '<': signed/unsigned mismatch
+d:\dev\procedural\procedural\procedural.cpp(250): warning C4244: 'argument': conversion from 'double' to 'const float', possible loss of data
+d:\dev\procedural\procedural\procedural.cpp(254): warning C4244: 'argument': conversion from 'double' to 'const float', possible loss of data
+d:\dev\procedural\procedural\procedural.cpp(258): warning C4244: 'argument': conversion from 'double' to 'const float', possible loss of data
+d:\dev\procedural\procedural\procedural.cpp(262): warning C4244: 'argument': conversion from 'double' to 'const float', possible loss of data
+d:\dev\procedural\procedural\procedural.cpp(266): warning C4244: 'argument': conversion from 'double' to 'const float', possible loss of data
+d:\dev\procedural\procedural\procedural.cpp(270): warning C4244: 'argument': conversion from 'double' to 'const float', possible loss of data
+d:\dev\procedural\procedural\procedural.cpp(313): warning C4244: 'argument': conversion from 'double' to 'const float', possible loss of data
+d:\dev\procedural\procedural\procedural.cpp(317): warning C4244: 'argument': conversion from 'double' to 'const float', possible loss of data
+d:\dev\procedural\procedural\procedural.cpp(126): warning C4715: 'Procedural::initGL': not all control paths return a value
   Procedural.vcxproj -> D:\Dev\Procedural\Debug\Procedural.exe

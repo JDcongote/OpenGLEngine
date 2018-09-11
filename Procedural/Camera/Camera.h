@@ -34,6 +34,7 @@ public:
 	const float get_viewport_height() const;
 
 	bool should_update;
+	bool should_move_camera;
 	~Camera();
 
 private:

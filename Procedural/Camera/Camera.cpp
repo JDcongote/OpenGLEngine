@@ -40,6 +40,7 @@ Camera::Camera(const Vector position, const float near, const float far, const f
 	view_matrix = rotation_matrix * translation_mat;
 
 	should_update = true;
+	should_move_camera = false;
 }
 
 Matrix4f Camera::get_view_matrix()

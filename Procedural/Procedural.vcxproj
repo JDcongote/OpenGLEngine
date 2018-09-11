@@ -136,6 +136,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Camera\Camera.cpp" />
+    <ClCompile Include="Input\Input.cpp" />
+    <ClCompile Include="Log\Log.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Math\Matrix\Matrix4f.cpp" />
     <ClCompile Include="Math\Raycast\Raycaster.cpp" />
@@ -143,12 +145,16 @@
     <ClCompile Include="Math\Vector\Vector3f.cpp" />
     <ClCompile Include="Math\Quaternion\Quaternion.cpp" />
     <ClCompile Include="Math\Vector\Vector4f.cpp" />
+    <ClCompile Include="Procedural.cpp" />
+    <ClCompile Include="ShaderProgram\ShaderProgram.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\fragment.frag" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera\Camera.h" />
+    <ClInclude Include="Input\Input.h" />
+    <ClInclude Include="Log\Log.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="Math\Math3D.h" />
     <ClInclude Include="Math\Matrix\Matrix4f.h" />
@@ -157,6 +163,8 @@
     <ClInclude Include="Math\Vector\Vector3f.h" />
     <ClInclude Include="Math\Quaternion\Quaternion.h" />
     <ClInclude Include="Math\Vector\Vector4f.h" />
+    <ClInclude Include="Procedural.h" />
+    <ClInclude Include="ShaderProgram\ShaderProgram.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\vertex.vert">

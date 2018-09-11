@@ -3,6 +3,7 @@
 class Raycaster
 {
 public:
+	Raycaster();
 	Raycaster(Camera camera);
 	void update_coords_view(const double x, const double y);
 	const Vector3f get_ray_world() const;
