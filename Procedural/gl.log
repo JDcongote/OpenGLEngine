@@ -1,0 +1,13 @@
+GL_LOG_FILE log. local time Tue Sep 11 20:31:22 2018
+
+starting GLFW
+3.2.1 Win32 WGL EGL VisualC
+Renderer: GeForce GTX 1070/PCIe/SSE2
+OpenGL version supported 4.0.0 NVIDIA 391.35
+
+SHADER: read shader: 
+Shaders/vertex.vert
+
+SHADER: read shader: 
+Shaders/fragment.frag
+program 3 GL_VALIDATE_STATUS = 1
