@@ -248,12 +248,13 @@ float Matrix4f::determinant() const
 		mat[0] * mat[5] * mat[10] * mat[15];
 }
 
-void Matrix4f::translate(const float x, const float y, const float z)
+Matrix4f Matrix4f::translate(const float x, const float y, const float z)
 {
 	m41 += x;
 	m42 += y;
 	m43 += z;
 	_update();
+	return *this;
 }
 
 void Matrix4f::translate_x(const float x)

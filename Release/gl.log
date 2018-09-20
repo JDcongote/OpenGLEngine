@@ -1,0 +1,30 @@
+GL_LOG_FILE log. local time Fri Sep 14 00:36:15 2018
+
+starting GLFW
+3.2.1 Win32 WGL EGL VisualC
+
+Renderer: GeForce GTX 1070/PCIe/SSE2
+OpenGL version supported 4.6.0 NVIDIA 391.35
+
+SHADER: read shader: 
+Shaders/vertex.vert
+
+SHADER: read shader: 
+Shaders/fragment.frag
+
+
+--------------------
+shader program 1 info:
+GL_ATTACHED_SHADERS = 2
+GL_ACTIVE_ATTRIBUTES = 3
+  (0) type: vec2 name: 'texture_coords' location: 2
+  (1) type: vec3 name: 'vertex_normals' location: 1
+  (2) type: vec3 name: 'vertex_position' location: 0
+GL_ACTIVE_UNIFORMS = 5
+  (0) type: vec3 name: 'light_position' location: 0
+  (1) type: mat4 name: 'model' location: 1
+  (2) type: mat4 name: 'proj' location: -1
+  (3) type: sampler2D name: 'tex_sampler0' location: 2
+  (4) type: mat4 name: 'view' location: -1
+program 1 GL_VALIDATE_STATUS = 1
+

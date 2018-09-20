@@ -16,7 +16,7 @@ public:
 	Matrix4f inverse() const;
 	float determinant() const;
 
-	void translate(const float x, const float y, const float z);
+	Matrix4f translate(const float x, const float y, const float z);
 	void translate_x(const float x);
 	void translate_y(const float y);
 	void translate_z(const float z);

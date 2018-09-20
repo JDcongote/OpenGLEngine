@@ -17,6 +17,8 @@ public:
 	Camera();
 	Camera(const Vector position, const float near, const float far, const float fov, const float width, const float height);
 
+	Vector3f get_position();
+
 	Matrix4f get_view_matrix();
 	Matrix4f get_projection_matrix();
 	Matrix4f get_inverse_view_matrix();

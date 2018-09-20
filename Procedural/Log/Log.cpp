@@ -31,8 +31,11 @@ bool Log::gl_log(const char* message, ...) {
 	va_start(argptr, message);
 
 	vfprintf(file, message, argptr);
+	vprintf(message, argptr);
 	va_end(argptr);
 	fclose(file);
+	
+	//cout << message, argptr;
 	return true;
 }
 
@@ -50,8 +53,10 @@ bool Log::gl_log_err(const char* message, ...) {
 	va_end(argptr);
 	va_start(argptr, message);
 	vfprintf(stderr, message, argptr);
+	vprintf(message, argptr);
 	va_end(argptr);
 	fclose(file);
+	
 	return true;
 }
 

@@ -1,5 +1,6 @@
 #include "Procedural.h"
-
+#define STB_IMAGE_IMPLEMENTATION
+#include "Libs/stb_image.h"
 
 
 Procedural::Procedural()
@@ -7,7 +8,7 @@ Procedural::Procedural()
 	log = Log();
 	assert(log.restart_gl_log());
 
-	camera = Camera(Vector3f(0.0f, 0.0f, 3.0f), 0.1f, 100.0f, 66.0f, 640.0f, 480.0f);
+	camera = Camera(Vector3f(0.0f, 0.0f, 3.0f), 0.1f, 1000.0f, 66.0f, 1280, 720);
 	raycaster = Raycaster(camera);
 }
 
@@ -15,44 +16,107 @@ Procedural::Procedural()
 void _glfw_error_callback(int error, const char* description) {
 	printf("\nGLFW ERROR: code %i, message: %s\n", error, description);
 }
+// Main debug Callback
+void APIENTRY _debug_callback(GLenum source,
+	GLenum type,
+	GLuint id,
+	GLenum severity,
+	GLsizei length,
+	const GLchar *message,
+	const void *userParam) {
+
+	char src_str[2048]; /* source */
+	char type_str[2048]; /* type */
+	char sev_str[2048]; /* severity */
+
+	switch (source) {
+	case 0x8246:
+		strcpy(src_str, "API");
+		break;
+	case 0x8247:
+		strcpy(src_str, "WINDOW_SYSTEM");
+		break;
+	case 0x8248:
+		strcpy(src_str, "SHADER_COMPILER");
+		break;
+	case 0x8249:
+		strcpy(src_str, "THIRD_PARTY");
+		break;
+	case 0x824A:
+		strcpy(src_str, "APPLICATION");
+		break;
+	case 0x824B:
+		strcpy(src_str, "OTHER");
+		break;
+	default:
+		strcpy(src_str, "undefined");
+		break;
+	}
+	switch (type) {
+	case 0x824C:
+		strcpy(type_str, "ERROR");
+		break;
+	case 0x824D:
+		strcpy(type_str, "DEPRECATED_BEHAVIOR");
+		break;
+	case 0x824E:
+		strcpy(type_str, "UNDEFINED_BEHAVIOR");
+		break;
+	case 0x824F:
+		strcpy(type_str, "PORTABILITY");
+		break;
+	case 0x8250:
+		strcpy(type_str, "PERFORMANCE");
+		break;
+	case 0x8251:
+		strcpy(type_str, "OTHER");
+		break;
+	case 0x8268:
+		strcpy(type_str, "MARKER");
+		break;
+	case 0x8269:
+		strcpy(type_str, "PUSH_GROUP");
+		break;
+	case 0x826A:
+		strcpy(type_str, "POP_GROUP");
+		break;
+	default:
+		strcpy(type_str, "undefined");
+		break;
+	}
+	switch (severity) {
+	case 0x9146:
+		strcpy(sev_str, "HIGH");
+		break;
+	case 0x9147:
+		strcpy(sev_str, "MEDIUM");
+		break;
+	case 0x9148:
+		strcpy(sev_str, "LOW");
+		break;
+	case 0x826B:
+		strcpy(sev_str, "NOTIFICATION");
+		break;
+	default:
+		strcpy(sev_str, "undefined");
+		break;
+	}
+
+	fprintf(
+		stderr,
+		"source: %s type: %s id: %u severity: %s length: %i message: %s userParam: %i\n",
+		src_str,
+		type_str,
+		id,
+		sev_str,
+		length,
+		message,
+		*(int*)userParam
+	);
+}
 // end callbacks
 
 
-//refactor this when moving code to objects
-std::vector<GLfloat> calculate_normals(const float* points, const int size) {
-	std::vector<Vector3f> vec_array(size / 3);
-	std::vector<Vector3f> normals;
-	std::vector<GLfloat> final_normals(size);
-
-	for (int i = 0; i < size / 3; i++) {
-		Vector3f vec = Vector3f(points[i * 3], points[i * 3 + 1], points[i * 3 + 2]);
-		vec_array[i] = vec;
-	}
-	//not the best way but its only for development purposes
-	int limit = (size / 3) - 2; //loop run once per triangle, two triangles per face
-	for (int i = 0; i < limit; i += 3)
-	{
-		Vector3f p0 = Vector3f(points[i * 3], points[i * 3 + 1], points[i * 3 + 2]);
-		Vector3f p1 = Vector3f(points[i * 3 + 3], points[i * 3 + 4], points[i * 3 + 5]);
-		Vector3f p2 = Vector3f(points[i * 3 + 6], points[i * 3 + 7], points[i * 3 + 8]);
-
-		Vector3f edge_1 = (p1 - p2).normalize();
-		Vector3f edge_2 = (p2 - p0).normalize();
-		Vector3f normal = edge_1 * edge_2;
-		normals.push_back(normal);
-	}
-	int j = 0;
-	limit = 9;
-	for (int i = 0; i < normals.size(); i++) {
-		for (j; j < limit; j += 3) {
-			final_normals[j] = normals[i].x * -1;
-			final_normals[j + 1] = normals[i].y * -1;
-			final_normals[j + 2] = normals[i].z * -1;
-		}
-		limit += 9;
-	}
-	return final_normals;
-}
 
 int Procedural::initGL()
 {
@@ -66,17 +130,12 @@ int Procedural::initGL()
 	}
 
 	// Set hints
+	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);// DISABLE FOR RELEASE
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-	//switches
-	// Enable depth test
-	glEnable(GL_DEPTH_TEST);
-	// Accept fragment if it closer to the camera than the former one
-	glDepthFunc(GL_LESS);
-
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);	
+	
 
 	int count;
 	GLFWmonitor** monitors = glfwGetMonitors(&count);
@@ -84,49 +143,88 @@ int Procedural::initGL()
 	//const GLFWvidmode* current_mode = glfwGetVideoMode(monitors[1]);
 
 	//GLFWwindow* window = glfwCreateWindow(current_mode->width, current_mode->height, "Hello Triangle", NULL, NULL);
-	window = glfwCreateWindow(640, 480, "GLengine", NULL, NULL);
+	window = glfwCreateWindow(1280, 720, "GLengine", NULL, NULL);
 	if (!window) {
 		fprintf(stderr, "ERROR: couldn't initialize window");
 		glfwTerminate();
 		return 1;
 	}
+
+	
+
 	// needed for glfwGetUserPointer to work
 	glfwSetWindowUserPointer(window, this);
-
 	glfwMakeContextCurrent(window);
 	glewExperimental = GL_TRUE;
 	GLenum error = glGetError();
-
 	if (error != GL_NO_ERROR)
 	{
 		fprintf(stderr, "OpenGL Error: %i", error);
 	}
-
 	GLenum glewinit = glewInit();
+
+	//switches
+	// Enable depth test
+	glEnable(GL_DEPTH_TEST);
+	// Accept fragment if it closer to the camera than the former one
+	glDepthFunc(GL_LESS);
+	glEnable(GL_CULL_FACE);
+	glCullFace(GL_BACK);
+	glFrontFace(GL_CCW);
+
+	if (GLEW_KHR_debug) {
+		int param = -1;
+		printf("KHR_debug extension found\n");
+		glDebugMessageCallback(_debug_callback, &param);
+		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+		printf("debug callback engaged\n");
+	}
+	else {
+		printf("KHR_debug extension NOT found\n");
+	}
+	if (GLEW_ARB_uniform_buffer_object) {
+		printf("GLEW_ARB_uniform_buffer_object = YES\n");
+		GLint blocks = 0;
+		glGetIntegerv(GL_MAX_UNIFORM_BUFFER_BINDINGS, &blocks);
+		printf("GL_MAX_UNIFORM_BUFFER_BINDINGS = %i\n", blocks);
+	}
+	else {
+		printf("GLEW_ARB_uniform_buffer_object = NO\n");
+	}
+
 	const GLubyte* renderer = glGetString(GL_RENDERER);
 	const GLubyte* version = glGetString(GL_VERSION);
-	log.gl_log("Renderer: %s\n", renderer);
+
+	log.gl_log("\nRenderer: %s\n", renderer);
 	log.gl_log("OpenGL version supported %s\n", version);
 
-	
-
-	// Define simple shaders	
+	// Define simple shaders		
 	shader_program = ShaderProgram(log);
-	shader_program.load_shader("vertex.vert", GL_VERTEX_SHADER);
-	shader_program.load_shader("fragment.frag", GL_FRAGMENT_SHADER);
-	shader_program.attach_and_link();
-
-	//GLuint current_program = -1;
+	shader_program.load_shader("default.vert", GL_VERTEX_SHADER);
+	shader_program.load_shader("default.frag", GL_FRAGMENT_SHADER);
+	shader_program.attach_and_link(shader_program.program_index);
 
 	//callbacks
 	glfwSetMouseButtonCallback(window, _mouse_button_callback);
 	glfwSetCursorPosCallback(window, _cursor_pos_callback);
-
-	
 }
 
 int Procedural::render_loop() {
 	//the following code will be refactored to OO	
+	// LIGHT
+	const float light_position_world[] = {0.0f,10.0f,10.0f };
+	//model matrix
+	Matrix4f mat4 = Matrix4f();
+	Matrix4f mat42 = Matrix4f();
+	mat42.translate(2, 0, 0);
+
+	Tex2D texture = Tex2D("test.png", GL_TEXTURE_2D);
+	Tex2D texture2 = Tex2D("testing.png", GL_TEXTURE_2D);
+	//Tex2D texture2 = Tex2D("testing.png", GL_TEXTURE_CUBE_MAP);
+
+	//code for deferred rendering
+	//unsigned char* buffer = (unsigned char*)malloc(g_fb_width * g_fb_height * 3);
+	//glReadPixels(0, 0, g_fb_width, g_fb_height, GL_RGB, GL_UNSIGNED_BYTE, buffer);
 
 	GLfloat points[] = {
 		/*FRONT SIDE*/
@@ -150,21 +248,21 @@ int Procedural::render_loop() {
 		-1.0f, 1.0f, 1.0f,
 		-1.0f, 1.0f,-1.0f,
 		1.0f, 1.0f, 1.0f,
-		/*SIDE1*/
+		/*LEFT SIDE*/
 		-1.0f, 1.0f, 1.0f,
-		-1.0f,-1.0f, 1.0f,
 		-1.0f,-1.0f,-1.0f,
 		-1.0f, 1.0f,-1.0f,
-		-1.0f, 1.0f, 1.0f,
 		-1.0f,-1.0f,-1.0f,
-		/*SIDE 2*/
+		-1.0f, 1.0f, 1.0f,
+		-1.0f,-1.0f, 1.0f,
+		/*BACK SIDE*/
 		-1.0f, 1.0f,-1.0f,
 		-1.0f,-1.0f,-1.0f,
 		1.0f, 1.0f,-1.0f,
 		-1.0f,-1.0f,-1.0f,
 		1.0f,-1.0f,-1.0f,
 		1.0f, 1.0f,-1.0f,
-		/*SIDE 3*/
+		/*BOTTOM SIDE*/
 		1.0f,-1.0f,-1.0f,
 		-1.0f,-1.0f,-1.0f,
 		1.0f,-1.0f, 1.0f,
@@ -173,41 +271,117 @@ int Procedural::render_loop() {
 		1.0f,-1.0f, 1.0f,
 	};
 
-	std::vector<GLfloat> normals = calculate_normals(points, std::size(points));
+	GLfloat texcoords[] = {
+		0.0, 1.0,
+		1.0, 0.0,
+		0.0, 0.0,
+		1.0, 0.0,
+		0.0, 1.0,
+		1.0, 1.0,
+		/*Right*/
+		1.0, 1.0,
+		1.0, 0.0,
+		0.0, 1.0,
+		0.0, 0.0,
+		0.0, 1.0,
+		1.0, 0.0,
+		/*top*/
+		0.0, 1.0,
+		1.0, 1.0,
+		1.0, 0.0,
+		0.0, 0.0,
+		0.0, 1.0,
+		1.0, 0.0,
+		/*left*/
+		1.0, 1.0,
+		0.0, 0.0,
+		0.0, 1.0,
+		0.0, 0.0,
+		1.0, 1.0,
+		1.0, 0.0,
+		/*back*/
+		1.0, 1.0,
+		1.0, 0.0,
+		0.0, 1.0,
+		1.0, 0.0,
+		0.0, 0.0,
+		0.0, 1.0,
+		/*bottom*/
+		0.0, 1.0,
+		1.0, 1.0,
+		0.0, 0.0,
+		1.0, 1.0,
+		1.0, 0.0,
+		0.0, 0.0
+	};
+
+	//std::vector<GLfloat> normals = calculate_normals(points, std::size(points));
+
+	/*GLuint tex_coords = 0;
+	glGenBuffers(1, &tex_coords);
+	glBindBuffer(GL_ARRAY_BUFFER, tex_coords);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(texcoords), texcoords, GL_STATIC_DRAW);
 
 	GLuint points_vbo = 0;
 	glGenBuffers(1, &points_vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, points_vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(points), points, GL_DYNAMIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(points), points, GL_STATIC_DRAW);
 
 	GLuint normals_vbo = 0;
 	glGenBuffers(1, &normals_vbo);
 	glBindBuffer(GL_ARRAY_BUFFER, normals_vbo);
-	glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(GLfloat), &normals[0], GL_DYNAMIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(GLfloat), &normals[0], GL_STATIC_DRAW);*/
 
+	//UBO camera block
+	GLuint camera_ubo;
+	glGenBuffers(1, &camera_ubo);
+	glBindBuffer(GL_UNIFORM_BUFFER, camera_ubo);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(float) * 32 /*two matrices of 16 components*/, NULL, GL_DYNAMIC_DRAW);
+	int block_id = 0;
+	GLuint camera_ubo_index = glGetUniformBlockIndex(shader_program.program_index, "camera_ubo");//repeat this for every shader that´ll share this UBO
+	glUniformBlockBinding(shader_program.program_index, camera_ubo_index, block_id);//repeat this for every shader that´ll share this UBO
+
+	//load model
+	GLuint vao = 0;
+	int point_count;
+	ObjectLoader::load_mesh("suzanne.obj", &vao, &point_count);
+	GLuint box_vao = 0;
+	int box_point_count;
+	ObjectLoader::load_mesh("box.obj", &box_vao, &box_point_count);
+	
 
 	// Only define the vertex array object once, then draw
-	GLuint vao = 0;
-	glGenVertexArrays(1, &vao);
+	
+	/*glGenVertexArrays(1, &vao);
+	/*glGenVertexArrays(1, &vao);
 	glBindVertexArray(vao);
 	glBindBuffer(GL_ARRAY_BUFFER, points_vbo);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
 	glBindBuffer(GL_ARRAY_BUFFER, normals_vbo);
 	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, NULL);
+	glBindBuffer(GL_ARRAY_BUFFER, tex_coords);
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, NULL);
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
-	// LIGHT
-	const float light_position_world[] = { 10.0f, 10.0f, 10.0f }; 
-	Matrix4f mat4 = Matrix4f();
+	glEnableVertexAttribArray(2);	*/
+
 	//keep track of this variable, returns -1 if not found to be active
 	GLuint model_matrix = glGetUniformLocation(shader_program.program_index, "model");
 	GLuint view_matrix = glGetUniformLocation(shader_program.program_index, "view");
 	GLuint proj_matrix = glGetUniformLocation(shader_program.program_index, "proj");
 	GLuint light_position = glGetUniformLocation(shader_program.program_index, "light_position");
+	GLuint camera_position = glGetUniformLocation(shader_program.program_index, "camera_position");
 
-	glUniformMatrix4fv(view_matrix, 1, GL_FALSE, camera.get_view_matrix().get_as_array());
-	glUniformMatrix4fv(proj_matrix, 1, GL_FALSE, camera.get_projection_matrix().get_as_array());
+	glBindBufferBase(GL_UNIFORM_BUFFER, block_id, camera_ubo);
+	float* camera_ubo_ptr = (float*)glMapBufferRange(GL_UNIFORM_BUFFER, 0, sizeof(float) * 32, GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
+	memcpy(&camera_ubo_ptr[0], camera.get_projection_matrix().get_as_array(), sizeof(float) * 16);
+	memcpy(&camera_ubo_ptr[16], camera.get_view_matrix().get_as_array(), sizeof(float) * 16);
+	glUnmapBuffer(GL_UNIFORM_BUFFER);
+
 	while (!glfwWindowShouldClose(window)) {
+		// Clear bits
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClearColor(0.2f, 0.2f, 0.2f, 1.0f);
 		static double previous_seconds = glfwGetTime();
 		double current_seconds = glfwGetTime();
 
@@ -215,9 +389,7 @@ int Procedural::render_loop() {
 		previous_seconds = current_seconds;
 
 
-		// Clear bits
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glClearColor(0.3f, 0.3f, 0.3f, 1.0f);
+		
 		//current_program = shader_program;
 		glUseProgram(shader_program.program_index);
 
@@ -225,19 +397,24 @@ int Procedural::render_loop() {
 		if (camera.should_update) {
 			camera.should_update = false;
 
-			glUniformMatrix4fv(model_matrix, 1, GL_FALSE, mat4.get_as_array());
-			glUniformMatrix4fv(view_matrix, 1, GL_FALSE, camera.get_view_matrix().get_as_array());
-			glUniformMatrix4fv(proj_matrix, 1, GL_FALSE, camera.get_projection_matrix().get_as_array());
+			glUniform3fv(camera_position, 1, camera.get_position().get_as_array());
+			//glUniformMatrix4fv(view_matrix, 1, GL_FALSE, camera.get_view_matrix().get_as_array());
+			//glUniformMatrix4fv(proj_matrix, 1, GL_FALSE, camera.get_projection_matrix().get_as_array());
 			glUniform3fv(light_position, 1, light_position_world);
+			memcpy(&camera_ubo_ptr[0], camera.get_projection_matrix().get_as_array(), sizeof(float) * 16);
+			memcpy(&camera_ubo_ptr[16], camera.get_view_matrix().get_as_array(), sizeof(float) * 16);
 		}
 
+		
+
+		
 		glBindVertexArray(vao);
-
-		glEnable(GL_CULL_FACE);
-		glCullFace(GL_BACK);
-		glFrontFace(GL_CW);
-
-		glDrawArrays(GL_TRIANGLES, 0, 12 * 3);
+		texture.activate_texture(GL_TEXTURE0);
+		texture2.activate_texture(GL_TEXTURE1);
+		glUniformMatrix4fv(model_matrix, 1, GL_FALSE, mat4.get_as_array());
+		glDrawArrays(GL_TRIANGLES, 0, point_count);
+		//glUniformMatrix4fv(model_matrix, 1, GL_FALSE, mat42.get_as_array());
+		//glDrawArrays(GL_TRIANGLES, 0, point_count); 
 
 		glfwSwapBuffers(window);
 
@@ -275,9 +452,10 @@ int Procedural::render_loop() {
 
 		// Only for development!
 		if (GLFW_PRESS == glfwGetKey(window, GLFW_KEY_R)) {
-			shader_program.reload_shaders();			
+			shader_program.reload_shaders();
 			camera.should_update = true;
 		}
+
 		Vector3f ray_world = raycaster.get_ray_world();
 		float points[] = {
 			ray_world.x, ray_world.y, ray_world.z,

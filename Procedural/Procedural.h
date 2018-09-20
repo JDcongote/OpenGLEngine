@@ -1,26 +1,22 @@
 #pragma once
 //include GLEW
-#include <GL/glew.h>
-
-//Include GLFW
-#include <GLFW/glfw3.h>
+#include "CommonHeaders.h"
 
 #include <assert.h>
 #include <vector>
 #include <iterator> 
 
-#include "Log/Log.h"
-#include "Math/Matrix/Matrix4f.h"
 #include "Camera/Camera.h"
 #include "ShaderProgram/ShaderProgram.h";
 #include "Math/Raycast/Raycaster.h"
+#include "Texture/Tex2D.h"
+#include "Tools/ObjectLoader.h"
+
 class Procedural
 {
 public:
 	Log log;
 	Procedural();
-
-	void glfw_error_callback(int error, const char * description);
 
 	int initGL();
 

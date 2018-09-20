@@ -1,5 +1,46 @@
-﻿  main.cpp
+﻿  Camera.cpp
+d:\dev\procedural\procedural\camera\camera.cpp(27): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+  Input.cpp
+  Log.cpp
+d:\dev\procedural\procedural\log\log.h(18): warning C4091: 'static ': ignored on left of 'Log' when no variable is declared
+  main.cpp
+d:\dev\procedural\procedural\log\log.h(18): warning C4091: 'static ': ignored on left of 'Log' when no variable is declared
+d:\dev\procedural\procedural\procedural.h(15): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+  Matrix4f.cpp
+d:\dev\procedural\procedural\math\matrix\matrix4f.cpp(285): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+d:\dev\procedural\procedural\math\matrix\matrix4f.cpp(286): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+d:\dev\procedural\procedural\math\matrix\matrix4f.cpp(287): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+d:\dev\procedural\procedural\math\matrix\matrix4f.cpp(289): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+d:\dev\procedural\procedural\math\matrix\matrix4f.cpp(290): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+d:\dev\procedural\procedural\math\matrix\matrix4f.cpp(291): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+d:\dev\procedural\procedural\math\matrix\matrix4f.cpp(309): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+d:\dev\procedural\procedural\math\matrix\matrix4f.cpp(327): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+  Raycaster.cpp
+d:\dev\procedural\procedural\math\raycast\raycaster.cpp(21): warning C4244: 'argument': conversion from 'double' to 'const float', possible loss of data
+  Vector.cpp
+  Vector3f.cpp
+  Quaternion.cpp
+d:\dev\procedural\procedural\math\quaternion\quaternion.cpp(11): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+  Vector4f.cpp
+  Procedural.cpp
+d:\dev\procedural\procedural\log\log.h(18): warning C4091: 'static ': ignored on left of 'Log' when no variable is declared
+d:\dev\procedural\procedural\procedural.h(15): warning C4067: unexpected tokens following preprocessor directive - expected a newline
+d:\dev\procedural\procedural\procedural.cpp(145): warning C4018: '<': signed/unsigned mismatch
+d:\dev\procedural\procedural\procedural.cpp(436): warning C4244: 'argument': conversion from 'double' to 'const float', possible loss of data
+d:\dev\procedural\procedural\procedural.cpp(440): warning C4244: 'argument': conversion from 'double' to 'const float', possible loss of data
+d:\dev\procedural\procedural\procedural.cpp(444): warning C4244: 'argument': conversion from 'double' to 'const float', possible loss of data
+d:\dev\procedural\procedural\procedural.cpp(448): warning C4244: 'argument': conversion from 'double' to 'const float', possible loss of data
+d:\dev\procedural\procedural\procedural.cpp(452): warning C4244: 'argument': conversion from 'double' to 'const float', possible loss of data
+d:\dev\procedural\procedural\procedural.cpp(456): warning C4244: 'argument': conversion from 'double' to 'const float', possible loss of data
+d:\dev\procedural\procedural\procedural.cpp(499): warning C4244: 'argument': conversion from 'double' to 'const float', possible loss of data
+d:\dev\procedural\procedural\procedural.cpp(503): warning C4244: 'argument': conversion from 'double' to 'const float', possible loss of data
+  ShaderProgram.cpp
+d:\dev\procedural\procedural\log\log.h(18): warning C4091: 'static ': ignored on left of 'Log' when no variable is declared
+  Tex2D.cpp
   Generating code
-  All 5 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+d:\dev\procedural\procedural\procedural.cpp(238): warning C4715: 'Procedural::initGL': not all control paths return a value
+  582 of 582 functions (100.0%) were compiled.
+    577 functions were new in current compilation
+    0 functions had inline decision re-evaluated but remain unchanged
   Finished generating code
   Procedural.vcxproj -> D:\Dev\Procedural\Release\Procedural.exe

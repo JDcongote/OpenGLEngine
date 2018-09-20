@@ -43,6 +43,14 @@ Camera::Camera(const Vector position, const float near, const float far, const f
 	should_move_camera = false;
 }
 
+Vector3f Camera::get_position()
+{
+	Vector3f pos = Vector3f(translation_mat.m41,
+		translation_mat.m42,
+		translation_mat.m43);
+	return pos;
+}
+
 Matrix4f Camera::get_view_matrix()
 {
 	return view_matrix;

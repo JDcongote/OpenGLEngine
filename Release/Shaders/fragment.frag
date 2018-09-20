@@ -1,7 +1,10 @@
 //fragment.frag
-#version 400
+#version 460
+
+layout (binding = 0) uniform sampler2D tex_sampler0;
 
 //in vec3 color;
+in vec2 tex_coords;
 in vec3 light_pos, color, position_eye, normal_eye, normals;
 in mat4 view_mat;
 
@@ -20,9 +23,12 @@ vec3 Kd = vec3 (0.5, 0.5, 0.5); // orange diffuse surface reflectance
 vec3 Ka = vec3 (1.0, 1.0, 1.0); // fully reflect ambient light
 float specular_exponent = 10.0; // specular 'power'
 
+vec4 texel = texture (tex_sampler0, tex_coords);
+
 void main() {
 	// ambient intensity
 	vec3 Ia = La * Ka;
+	Ia = Ia *texel.rgb;
 
 	//light position in eye space
 	vec3 light_eye = vec3(view_mat * vec4(light_pos, 1.0));
@@ -33,6 +39,7 @@ void main() {
 
 	// diffuse intensity
 	vec3 Id = Ld * Kd * dot_pr;
+	Id = Id*texel.rgb;
 
 	// Specular intensity
 	vec3 surface_to_eye = normalize(-position_eye);
@@ -43,7 +50,10 @@ void main() {
 	float spec_factor = pow(dot_specular, specular_exponent);
 
 	vec3 Is = Ls * Ks * spec_factor;
+	
+	Is = Is * vec3(pow(texel.r,2), pow(texel.r,2), pow(texel.r,2));
+	
 
+    fragment_color = vec4((Is + Id + Ia), 1.0);
 
-    fragment_color = vec4(Is + Id + Ia, 1.0);
 }

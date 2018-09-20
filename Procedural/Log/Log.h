@@ -1,8 +1,11 @@
 #pragma once
+#include <iostream>
 #include <fstream>
 #include <time.h>
 #include <stdarg.h>
 #define GL_LOG_FILE "gl.log"
+
+using namespace std;
 
 static class Log
 {

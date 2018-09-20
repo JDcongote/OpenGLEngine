@@ -13,7 +13,7 @@ ShaderProgram::ShaderProgram(Log log)
 std::string ShaderProgram::read_shader(std::string name) {
 	std::string shader;
 
-	name = "Shaders/" + name;
+	name = "Resources/Shaders/" + name;
 	std::string line;
 	std::ifstream file(name);
 	if (file.is_open()) {
@@ -144,7 +144,7 @@ bool ShaderProgram::_is_valid(GLuint program) {
 	glValidateProgram(program);
 	int params = -1;
 	glGetProgramiv(program, GL_VALIDATE_STATUS, &params);
-	log.gl_log("program %i GL_VALIDATE_STATUS = %i\n", program, params);
+	log.gl_log("program %i GL_VALIDATE_STATUS = %i\n\n", program, params);
 	if (GL_TRUE != params) {
 		_print_shader_program_log(program);
 		return false;
@@ -177,41 +177,53 @@ void ShaderProgram::load_shader(std::string name, GLenum type) {
 	switch (type)
 	{
 	case GL_VERTEX_SHADER:
-		vertex_shader = {name, compiled_shader };
+		vertex_shader = {name, compiled_shader, shader, GL_VERTEX_SHADER };
+		shaders[0] = vertex_shader;
+		shader_count++;
 		break;
 	case GL_FRAGMENT_SHADER:
-		fragment_shader = { name, compiled_shader };
+		fragment_shader = { name, compiled_shader, shader, GL_FRAGMENT_SHADER };
+		shaders[1] = fragment_shader;
+		shader_count++;
 		break;
 	case GL_GEOMETRY_SHADER:
-		geometry_shader = { name, compiled_shader };
+		geometry_shader = { name, compiled_shader, shader, GL_GEOMETRY_SHADER };
+		shaders[2] = geometry_shader;
+		shader_count++;
 		break;
 	default:
 		break;
 	}
 }
 
-void ShaderProgram::attach_and_link() {
-	if (fragment_shader.id >= 0) {
-		glAttachShader(program_index, fragment_shader.id);
+void ShaderProgram::attach_and_link(GLuint program) {
+
+	if (fragment_shader.id > 0) {
+		glAttachShader(program, fragment_shader.id);
 	}
-	if (vertex_shader.id >= 0) {
-		glAttachShader(program_index, vertex_shader.id);
+	if (vertex_shader.id > 0) {
+		glAttachShader(program, vertex_shader.id);
 	}
-	if (geometry_shader.id >= 0) {
-		glAttachShader(program_index, geometry_shader.id);
+	if (geometry_shader.id > 0) {
+		glAttachShader(program, geometry_shader.id);
 	}
 	
-	glLinkProgram(program_index);
+	glLinkProgram(program);
 	// we no longer need them, they are linked in the program now
-	glDeleteShader(fragment_shader.id);
-	glDeleteShader(vertex_shader.id);
-	glDeleteShader(geometry_shader.id);
-
+	if (fragment_shader.id > 0) {
+		glDeleteShader(fragment_shader.id);
+	}
+	if (vertex_shader.id > 0) {
+		glDeleteShader(vertex_shader.id);
+	}
+	if (geometry_shader.id > 0) {
+		glDeleteShader(geometry_shader.id);
+	}
 
 	// check program link errors
-	_check_link_errors(program_index);
-	_print_all_shader_info(program_index);
-	_is_valid(program_index);
+	_check_link_errors(program);
+	_print_all_shader_info(program);
+	_is_valid(program);
 }
 
 //DEVELOPMENT STUFF
@@ -219,7 +231,7 @@ void ShaderProgram::attach_and_link() {
 Reloads the shaders attached to the given program
 */
 void ShaderProgram::reload_shaders() {
-	int shaderCount = -1;
+	/*int shaderCount = -1;
 	glGetProgramiv(program_index, GL_ATTACHED_SHADERS, &shaderCount);
 	//glGetShaderSource
 	const int max_length = 64;
@@ -251,9 +263,19 @@ void ShaderProgram::reload_shaders() {
 		load_shader(shader_name, param_type);
 		//glAttachShader(new_program, reloaded_shader);
 		//glDeleteShader(reloaded_shader);
+	}*/
+	GLuint new_program = glCreateProgram();
+	shader new_shaders[3];
+	int limit = shader_count;
+	for (int i = 0; i < limit; i++) {
+		new_shaders[i] = shaders[i];
 	}
-	attach_and_link();
-	glLinkProgram(new_program);
+	shader_count = 0;
+	for (int i = 0; i < limit; i++) {
+		load_shader(new_shaders[i].name, new_shaders[i].type);
+	}
+	attach_and_link(new_program);
+	//glLinkProgram(new_program);
 	if (_is_valid(new_program)) {
 		glDeleteProgram(program_index);
 		program_index = new_program;
