@@ -192,17 +192,17 @@ int Procedural::initGL()
 		printf("GLEW_ARB_uniform_buffer_object = NO\n");
 	}
 
+	int max_patch_vertices = 0;
+	glGetIntegerv(GL_MAX_PATCH_VERTICES, &max_patch_vertices);
+	printf("Max supported patch vertices %i\n", max_patch_vertices);
+
 	const GLubyte* renderer = glGetString(GL_RENDERER);
 	const GLubyte* version = glGetString(GL_VERSION);
 
 	log.gl_log("\nRenderer: %s\n", renderer);
 	log.gl_log("OpenGL version supported %s\n", version);
 
-	// Define simple shaders		
-	shader_program = ShaderProgram(log);
-	shader_program.load_shader("default.vert", GL_VERTEX_SHADER);
-	shader_program.load_shader("default.frag", GL_FRAGMENT_SHADER);
-	shader_program.attach_and_link(shader_program.program_index);
+	
 
 	//callbacks
 	glfwSetMouseButtonCallback(window, _mouse_button_callback);
@@ -210,20 +210,36 @@ int Procedural::initGL()
 }
 
 int Procedural::render_loop() {
+
+	// Define simple shaders		
+	ShaderProgram default_shader = ShaderProgram(log);
+	default_shader.load_shader("default.vert", GL_VERTEX_SHADER);
+	default_shader.load_shader("default.frag", GL_FRAGMENT_SHADER);
+	default_shader.load_shader("default.tessc", GL_TESS_CONTROL_SHADER);
+	default_shader.load_shader("default.tesse", GL_TESS_EVALUATION_SHADER);
+	default_shader.attach_and_link(default_shader.program_index);
+
+	/*ShaderProgram tess_shader = ShaderProgram(log);
+	tess_shader.load_shader("tess.vert", GL_VERTEX_SHADER);
+	tess_shader.load_shader("tess.frag", GL_FRAGMENT_SHADER);
+	tess_shader.load_shader("tess.tessc", GL_TESS_CONTROL_SHADER);
+	tess_shader.load_shader("tess.tesse", GL_TESS_EVALUATION_SHADER);
+	tess_shader.attach_and_link(tess_shader.program_index);*/
+
+	ShaderProgram skybox_shader = ShaderProgram(log);
+	skybox_shader.load_shader("skybox.vert", GL_VERTEX_SHADER);
+	skybox_shader.load_shader("skybox.frag", GL_FRAGMENT_SHADER);
+	skybox_shader.attach_and_link(skybox_shader.program_index);
+
 	//the following code will be refactored to OO	
 	// LIGHT
-	const float light_position_world[] = {0.0f,10.0f,10.0f };
-	//model matrix
-	Matrix4f mat4 = Matrix4f();
-	Matrix4f mat42 = Matrix4f();
-	mat42.translate(2, 0, 0);
-
-	Tex2D texture = Tex2D("test.png", GL_TEXTURE_2D);
-	Tex2D texture2 = Tex2D("testing.png", GL_TEXTURE_2D);
+	const float light_position_world[] = {0.0f,5.0f,5.0f };
+		
 	//Tex2D texture2 = Tex2D("testing.png", GL_TEXTURE_CUBE_MAP);
 
 	//code for deferred rendering
-	//unsigned char* buffer = (unsigned char*)malloc(g_fb_width * g_fb_height * 3);
+	//const int buffer_size = g_fb_width * g_fb_height * 3;
+	//unsigned char* buffer = (unsigned char*)new char[buffer_size];
 	//glReadPixels(0, 0, g_fb_width, g_fb_height, GL_RGB, GL_UNSIGNED_BYTE, buffer);
 
 	GLfloat points[] = {
@@ -315,69 +331,39 @@ int Procedural::render_loop() {
 		0.0, 0.0
 	};
 
-	//std::vector<GLfloat> normals = calculate_normals(points, std::size(points));
-
-	/*GLuint tex_coords = 0;
-	glGenBuffers(1, &tex_coords);
-	glBindBuffer(GL_ARRAY_BUFFER, tex_coords);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(texcoords), texcoords, GL_STATIC_DRAW);
-
-	GLuint points_vbo = 0;
-	glGenBuffers(1, &points_vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, points_vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(points), points, GL_STATIC_DRAW);
-
-	GLuint normals_vbo = 0;
-	glGenBuffers(1, &normals_vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, normals_vbo);
-	glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(GLfloat), &normals[0], GL_STATIC_DRAW);*/
-
 	//UBO camera block
 	GLuint camera_ubo;
 	glGenBuffers(1, &camera_ubo);
 	glBindBuffer(GL_UNIFORM_BUFFER, camera_ubo);
 	glBufferData(GL_UNIFORM_BUFFER, sizeof(float) * 32 /*two matrices of 16 components*/, NULL, GL_DYNAMIC_DRAW);
 	int block_id = 0;
-	GLuint camera_ubo_index = glGetUniformBlockIndex(shader_program.program_index, "camera_ubo");//repeat this for every shader that큞l share this UBO
-	glUniformBlockBinding(shader_program.program_index, camera_ubo_index, block_id);//repeat this for every shader that큞l share this UBO
+	GLuint camera_ubo_index = glGetUniformBlockIndex(default_shader.program_index, "camera_ubo");//repeat this for every shader that큞l share this UBO
+	glUniformBlockBinding(default_shader.program_index, camera_ubo_index, block_id);//repeat this for every shader that큞l share this UBO
 
-	//load model
-	GLuint vao = 0;
-	int point_count;
-	ObjectLoader::load_mesh("suzanne.obj", &vao, &point_count);
-	GLuint box_vao = 0;
-	int box_point_count;
-	ObjectLoader::load_mesh("box.obj", &box_vao, &box_point_count);
-	
-
-	// Only define the vertex array object once, then draw
-	
-	/*glGenVertexArrays(1, &vao);
-	/*glGenVertexArrays(1, &vao);
-	glBindVertexArray(vao);
-	glBindBuffer(GL_ARRAY_BUFFER, points_vbo);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-	glBindBuffer(GL_ARRAY_BUFFER, normals_vbo);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-	glBindBuffer(GL_ARRAY_BUFFER, tex_coords);
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 0, NULL);
-	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
-	glEnableVertexAttribArray(2);	*/
+	//load models  
+	Tex2D cubemap = Tex2D("cube", GL_TEXTURE_CUBE_MAP);
+	Object dinosaur = Object("suzanne.obj",true, 5, Tex2D("diffuse.png", GL_TEXTURE_2D), Tex2D("specular.png", GL_TEXTURE_2D), Tex2D("normal.png", GL_TEXTURE_2D), 
+		cubemap, Tex2D("height.png", GL_TEXTURE_2D));
+	Object skybox = Object("box.obj",false,1, cubemap);
+	skybox.model_matrix.scale(100.0f, 100.0f, 100.0f);
 
 	//keep track of this variable, returns -1 if not found to be active
-	GLuint model_matrix = glGetUniformLocation(shader_program.program_index, "model");
-	GLuint view_matrix = glGetUniformLocation(shader_program.program_index, "view");
-	GLuint proj_matrix = glGetUniformLocation(shader_program.program_index, "proj");
-	GLuint light_position = glGetUniformLocation(shader_program.program_index, "light_position");
-	GLuint camera_position = glGetUniformLocation(shader_program.program_index, "camera_position");
+	GLuint pn_flag = glGetUniformLocation(default_shader.program_index, "USE_PN");
+	GLint use_pn = 1;
+	glUniform1iv(pn_flag,1, &use_pn);
+	GLuint model_matrix = glGetUniformLocation(default_shader.program_index, "model_matrix");
+	GLuint light_position = glGetUniformLocation(default_shader.program_index, "light_position");
+	GLuint camera_position = glGetUniformLocation(default_shader.program_index, "camera_position");
 
+	// Uniform buffer object for all camera matrices
 	glBindBufferBase(GL_UNIFORM_BUFFER, block_id, camera_ubo);
 	float* camera_ubo_ptr = (float*)glMapBufferRange(GL_UNIFORM_BUFFER, 0, sizeof(float) * 32, GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
 	memcpy(&camera_ubo_ptr[0], camera.get_projection_matrix().get_as_array(), sizeof(float) * 16);
 	memcpy(&camera_ubo_ptr[16], camera.get_view_matrix().get_as_array(), sizeof(float) * 16);
 	glUnmapBuffer(GL_UNIFORM_BUFFER);
 
+
+	// MAIN LOOP
 	while (!glfwWindowShouldClose(window)) {
 		// Clear bits
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -388,33 +374,27 @@ int Procedural::render_loop() {
 		double elapsed_seconds = current_seconds - previous_seconds;
 		previous_seconds = current_seconds;
 
-
+		//render skybox
+		glDepthMask(GL_FALSE);
+		glUseProgram(skybox_shader.program_index);
 		
-		//current_program = shader_program;
-		glUseProgram(shader_program.program_index);
+		glCullFace(GL_FRONT);
+		skybox.render(glGetUniformLocation(skybox_shader.program_index, "model_matrix"));
+		glDepthMask(GL_TRUE);
+		glCullFace(GL_BACK);
+		//current_program = default_shader;
+		glUseProgram(default_shader.program_index);
 
 		// Expensive function!
 		if (camera.should_update) {
 			camera.should_update = false;
-
 			glUniform3fv(camera_position, 1, camera.get_position().get_as_array());
-			//glUniformMatrix4fv(view_matrix, 1, GL_FALSE, camera.get_view_matrix().get_as_array());
-			//glUniformMatrix4fv(proj_matrix, 1, GL_FALSE, camera.get_projection_matrix().get_as_array());
 			glUniform3fv(light_position, 1, light_position_world);
 			memcpy(&camera_ubo_ptr[0], camera.get_projection_matrix().get_as_array(), sizeof(float) * 16);
 			memcpy(&camera_ubo_ptr[16], camera.get_view_matrix().get_as_array(), sizeof(float) * 16);
 		}
 
-		
-
-		
-		glBindVertexArray(vao);
-		texture.activate_texture(GL_TEXTURE0);
-		texture2.activate_texture(GL_TEXTURE1);
-		glUniformMatrix4fv(model_matrix, 1, GL_FALSE, mat4.get_as_array());
-		glDrawArrays(GL_TRIANGLES, 0, point_count);
-		//glUniformMatrix4fv(model_matrix, 1, GL_FALSE, mat42.get_as_array());
-		//glDrawArrays(GL_TRIANGLES, 0, point_count); 
+		dinosaur.render(model_matrix);		
 
 		glfwSwapBuffers(window);
 
@@ -452,7 +432,7 @@ int Procedural::render_loop() {
 
 		// Only for development!
 		if (GLFW_PRESS == glfwGetKey(window, GLFW_KEY_R)) {
-			shader_program.reload_shaders();
+			default_shader.reload_shaders();
 			camera.should_update = true;
 		}
 

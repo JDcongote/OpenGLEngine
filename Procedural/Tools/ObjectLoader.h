@@ -19,6 +19,7 @@ public:
 	ObjectLoader();
 	static std::vector<GLfloat> calculate_normals(const float * points, const int size);
 	static bool load_mesh(std::string file_name, GLuint * vao, int * point_count);
+	static GLfloat* calculate_tangents(GLfloat * normals, GLfloat * points, GLfloat * texcoords, int point_count);
 	~ObjectLoader();
 };
 

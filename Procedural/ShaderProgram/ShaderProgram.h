@@ -33,8 +33,10 @@ private:
 	shader vertex_shader = { "", 0};
 	shader fragment_shader = { "", 0 };
 	shader geometry_shader = { "", 0 };
+	shader tesscontrol_shader = { "", 0 };
+	shader tesseval_shader = { "", 0 };
 
-	shader shaders[3];
+	shader shaders[5];
 
 	int shader_count = 0;
 };

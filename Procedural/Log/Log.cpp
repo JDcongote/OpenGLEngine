@@ -49,9 +49,6 @@ bool Log::gl_log_err(const char* message, ...) {
 		return false;
 	}
 	va_start(argptr, message);
-	vfprintf(file, message, argptr);
-	va_end(argptr);
-	va_start(argptr, message);
 	vfprintf(stderr, message, argptr);
 	vprintf(message, argptr);
 	va_end(argptr);

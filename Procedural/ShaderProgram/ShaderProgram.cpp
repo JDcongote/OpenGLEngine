@@ -29,11 +29,14 @@ std::string ShaderProgram::read_shader(std::string name) {
 }
 
 void ShaderProgram::_print_shader_log(GLuint shader_index) {
-	const int max_length = 2048;
+	int max_length = 0;
+	char *shader_log;	
 	int actual_length = 0;
-	char shader_log[max_length];
+	glGetShaderiv(shader_index, GL_INFO_LOG_LENGTH, &max_length);
+	shader_log = (char *)malloc(max_length);
 	glGetShaderInfoLog(shader_index, max_length, &actual_length, shader_log);
 	printf("shader info log for GL index %u:\n%s\n", shader_index, shader_log);
+	free(shader_log);
 }
 
 void ShaderProgram::_check_compile_errors(GLuint compiled_shader) {
@@ -158,7 +161,6 @@ void ShaderProgram::_check_link_errors(GLuint program) {
 	glGetProgramiv(program, GL_LINK_STATUS, &params);
 	if (GL_TRUE != params) {
 		log.gl_log_err("\nERROR: program, %i, didn't link\n", program);
-		fprintf(stderr, "\nERROR: program, %i, didn't link\n", program);
 		_print_shader_log(program);
 	}
 }
@@ -191,21 +193,37 @@ void ShaderProgram::load_shader(std::string name, GLenum type) {
 		shaders[2] = geometry_shader;
 		shader_count++;
 		break;
+	case GL_TESS_CONTROL_SHADER:
+		tesscontrol_shader = { name, compiled_shader, shader, GL_TESS_CONTROL_SHADER };
+		shaders[3] = tesscontrol_shader;
+		shader_count++;
+		break;
+	case GL_TESS_EVALUATION_SHADER:
+		tesseval_shader = { name, compiled_shader, shader, GL_TESS_EVALUATION_SHADER };
+		shaders[4] = tesseval_shader;
+		shader_count++;
+		break;
 	default:
 		break;
 	}
 }
 
 void ShaderProgram::attach_and_link(GLuint program) {
-
-	if (fragment_shader.id > 0) {
-		glAttachShader(program, fragment_shader.id);
-	}
+	
 	if (vertex_shader.id > 0) {
 		glAttachShader(program, vertex_shader.id);
 	}
 	if (geometry_shader.id > 0) {
 		glAttachShader(program, geometry_shader.id);
+	}
+	if (tesscontrol_shader.id > 0) {
+		glAttachShader(program, tesscontrol_shader.id);
+	}
+	if (tesseval_shader.id > 0) {
+		glAttachShader(program, tesseval_shader.id);
+	}
+	if (fragment_shader.id > 0) {
+		glAttachShader(program, fragment_shader.id);
 	}
 	
 	glLinkProgram(program);
@@ -218,6 +236,12 @@ void ShaderProgram::attach_and_link(GLuint program) {
 	}
 	if (geometry_shader.id > 0) {
 		glDeleteShader(geometry_shader.id);
+	}
+	if (tesscontrol_shader.id > 0) {
+		glDeleteShader(tesscontrol_shader.id);
+	}
+	if (tesseval_shader.id > 0) {
+		glDeleteShader(tesseval_shader.id);
 	}
 
 	// check program link errors
@@ -265,7 +289,7 @@ void ShaderProgram::reload_shaders() {
 		//glDeleteShader(reloaded_shader);
 	}*/
 	GLuint new_program = glCreateProgram();
-	shader new_shaders[3];
+	shader new_shaders[5];
 	int limit = shader_count;
 	for (int i = 0; i < limit; i++) {
 		new_shaders[i] = shaders[i];

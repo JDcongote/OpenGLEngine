@@ -1,26 +1,14 @@
-﻿  Object.cpp
-d:\dev\procedural\procedural\log\log.h(18): warning C4091: 'static ': ignored on left of 'Log' when no variable is declared
-  Procedural.cpp
+﻿  Procedural.cpp
 d:\dev\procedural\procedural\log\log.h(18): warning C4091: 'static ': ignored on left of 'Log' when no variable is declared
 d:\dev\procedural\procedural\procedural.h(10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-d:\dev\procedural\procedural\tools\objectloader.h(23): warning C4091: 'static ': ignored on left of 'ObjectLoader' when no variable is declared
+d:\dev\procedural\procedural\tools\objectloader.h(24): warning C4091: 'static ': ignored on left of 'ObjectLoader' when no variable is declared
+d:\dev\procedural\procedural\procedural.cpp(407): warning C4244: 'argument': conversion from 'double' to 'const float', possible loss of data
+d:\dev\procedural\procedural\procedural.cpp(411): warning C4244: 'argument': conversion from 'double' to 'const float', possible loss of data
+d:\dev\procedural\procedural\procedural.cpp(415): warning C4244: 'argument': conversion from 'double' to 'const float', possible loss of data
+d:\dev\procedural\procedural\procedural.cpp(419): warning C4244: 'argument': conversion from 'double' to 'const float', possible loss of data
+d:\dev\procedural\procedural\procedural.cpp(423): warning C4244: 'argument': conversion from 'double' to 'const float', possible loss of data
 d:\dev\procedural\procedural\procedural.cpp(427): warning C4244: 'argument': conversion from 'double' to 'const float', possible loss of data
-d:\dev\procedural\procedural\procedural.cpp(431): warning C4244: 'argument': conversion from 'double' to 'const float', possible loss of data
-d:\dev\procedural\procedural\procedural.cpp(435): warning C4244: 'argument': conversion from 'double' to 'const float', possible loss of data
-d:\dev\procedural\procedural\procedural.cpp(439): warning C4244: 'argument': conversion from 'double' to 'const float', possible loss of data
-d:\dev\procedural\procedural\procedural.cpp(443): warning C4244: 'argument': conversion from 'double' to 'const float', possible loss of data
-d:\dev\procedural\procedural\procedural.cpp(447): warning C4244: 'argument': conversion from 'double' to 'const float', possible loss of data
-d:\dev\procedural\procedural\procedural.cpp(491): warning C4244: 'argument': conversion from 'double' to 'const float', possible loss of data
-d:\dev\procedural\procedural\procedural.cpp(495): warning C4244: 'argument': conversion from 'double' to 'const float', possible loss of data
-  ShaderProgram.cpp
-d:\dev\procedural\procedural\log\log.h(18): warning C4091: 'static ': ignored on left of 'Log' when no variable is declared
-  Tex2D.cpp
-d:\dev\procedural\procedural\log\log.h(18): warning C4091: 'static ': ignored on left of 'Log' when no variable is declared
-  main.cpp
-d:\dev\procedural\procedural\log\log.h(18): warning C4091: 'static ': ignored on left of 'Log' when no variable is declared
-d:\dev\procedural\procedural\procedural.h(10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-d:\dev\procedural\procedural\tools\objectloader.h(23): warning C4091: 'static ': ignored on left of 'ObjectLoader' when no variable is declared
-  Generating Code...
+d:\dev\procedural\procedural\procedural.cpp(471): warning C4244: 'argument': conversion from 'double' to 'const float', possible loss of data
+d:\dev\procedural\procedural\procedural.cpp(475): warning C4244: 'argument': conversion from 'double' to 'const float', possible loss of data
 d:\dev\procedural\procedural\procedural.cpp(210): warning C4715: 'Procedural::initGL': not all control paths return a value
-LINK : warning LNK4098: defaultlib 'MSVCRT' conflicts with use of other libs; use /NODEFAULTLIB:library
   Procedural.vcxproj -> D:\Dev\Procedural\Debug\Procedural.exe

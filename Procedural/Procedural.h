@@ -10,7 +10,7 @@
 #include "ShaderProgram/ShaderProgram.h";
 #include "Math/Raycast/Raycaster.h"
 #include "Texture/Tex2D.h"
-#include "Tools/ObjectLoader.h"
+#include "Object/Object.h"
 
 class Procedural
 {
@@ -36,10 +36,7 @@ private:
 	void MouseClick(int button, int action, int mods);
 	void MouseMove(double xpos, double ypo);
 	double prev_xpos, prev_ypos;
-
-	//temporary
-	ShaderProgram shader_program;
-
+	
 	GLFWwindow* window;
 	Camera camera;
 	Raycaster raycaster;

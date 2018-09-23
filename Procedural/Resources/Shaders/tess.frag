@@ -1,0 +1,11 @@
+#version 410
+
+in vec3 colour; // i made this up in the tess. evaluation shader
+
+in vec2 tex_coords;
+
+out vec4 fragcolour;
+
+void main () {
+	fragcolour = vec4 (colour, 1.0);
+}

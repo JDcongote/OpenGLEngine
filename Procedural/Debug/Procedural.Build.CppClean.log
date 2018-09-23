@@ -1,5 +1,6 @@
 d:\dev\procedural\procedural\debug\vc141.pdb
 d:\dev\procedural\procedural\debug\vc141.idb
+d:\dev\procedural\procedural\debug\objectloader.obj
 d:\dev\procedural\procedural\debug\tex2d.obj
 d:\dev\procedural\procedural\debug\shaderprogram.obj
 d:\dev\procedural\procedural\debug\procedural.obj
@@ -13,12 +14,10 @@ d:\dev\procedural\procedural\debug\main.obj
 d:\dev\procedural\procedural\debug\log.obj
 d:\dev\procedural\procedural\debug\input.obj
 d:\dev\procedural\procedural\debug\camera.obj
-d:\dev\procedural\procedural\debug\objectloader.obj
+d:\dev\procedural\procedural\debug\object.obj
 d:\dev\procedural\debug\procedural.exe
 d:\dev\procedural\debug\procedural.ilk
 d:\dev\procedural\debug\procedural.pdb
-d:\dev\procedural\procedural\debug\objectloader.obj.enc
-d:\dev\procedural\procedural\debug\shaderprogram.obj.enc
 d:\dev\procedural\procedural\debug\procedural.tlog\cl.command.1.tlog
 d:\dev\procedural\procedural\debug\procedural.tlog\cl.read.1.tlog
 d:\dev\procedural\procedural\debug\procedural.tlog\cl.write.1.tlog

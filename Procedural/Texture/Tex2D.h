@@ -14,9 +14,11 @@ public:
 	~Tex2D();
 private:
 	GLuint load_texture(std::string name, GLenum type);
-	void rotate_texture();
-	unsigned char* image_data;
+	bool load_cubemap(GLuint tex_index, GLenum side, std::string name);
+	void rotate_texture(unsigned char* image_data);
+	//unsigned char* image_data;
 	GLuint tex_index;
+	GLenum type;
 	int width, height, size;
 };
 
