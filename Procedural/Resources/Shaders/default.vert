@@ -23,8 +23,7 @@ void main(){
 	//eye space variables
 	position_eye = vec3(view * model_matrix * vec4(vertex_position, 1.0));	
 	light_position_eye = vec3(view * model_matrix * vec4(light_position, 1.0));
-	normal_eye = vec3(view * model_matrix * vec4(vertex_normals, 0.0));
-	
+	normal_eye = vec3(view * model_matrix * vec4(vertex_normals, 0.0));	
 
 	vec3 bi_tangents = cross(vertex_normals, vertex_tangent.xyz) * vertex_tangent.w; // to correct for hanedness
 	
@@ -53,5 +52,5 @@ void main(){
 	view_mat = view;
 	model_mat = model_matrix;
 	proj_mat = proj;	
-	//gl_Position  = proj * view * model_matrix * vec4(vertex_position, 1.0);	
+	gl_Position  = proj * view * model_matrix * vec4(vertex_position, 1.0);	
 }

@@ -2,6 +2,7 @@
 
 ShaderProgram::ShaderProgram()
 {
+	program_index = glCreateProgram();
 }
 
 ShaderProgram::ShaderProgram(Log log)

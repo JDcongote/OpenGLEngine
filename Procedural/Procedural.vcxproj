@@ -136,6 +136,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Camera\Camera.cpp" />
+    <ClCompile Include="CommonFunctions.cpp" />
+    <ClCompile Include="GUI\Panel.cpp" />
     <ClCompile Include="Input\Input.cpp" />
     <ClCompile Include="Log\Log.cpp" />
     <ClCompile Include="main.cpp" />
@@ -147,11 +149,20 @@
     <ClCompile Include="Math\Vector\Vector4f.cpp" />
     <ClCompile Include="Object\Object.cpp" />
     <ClCompile Include="Procedural.cpp" />
+    <ClCompile Include="Renderer\FrameBuffer.cpp" />
     <ClCompile Include="ShaderProgram\ShaderProgram.cpp" />
     <ClCompile Include="Texture\Tex2D.cpp" />
+    <ClCompile Include="Tools\FontLoader.cpp" />
     <ClCompile Include="Tools\ObjectLoader.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\Shaders\default_pn.tesc" />
+    <None Include="Resources\Shaders\default_pn.tese" />
+    <None Include="Resources\Shaders\gui.frag" />
+    <None Include="Resources\Shaders\gui.vert" />
+    <None Include="Resources\Shaders\post.frag" />
+    <None Include="Resources\Shaders\post.vert" />
+    <None Include="Resources\Shaders\Postprocess\bloom.frag" />
     <None Include="Shaders\default.frag" />
     <None Include="Shaders\skybox.frag" />
     <None Include="Shaders\skybox.vert" />
@@ -159,6 +170,8 @@
   <ItemGroup>
     <ClInclude Include="Camera\Camera.h" />
     <ClInclude Include="CommonHeaders.h" />
+    <ClInclude Include="GUI\GUI.h" />
+    <ClInclude Include="GUI\Panel.h" />
     <ClInclude Include="Input\Input.h" />
     <ClInclude Include="Libs\stb_image.h" />
     <ClInclude Include="Log\Log.h" />
@@ -172,8 +185,11 @@
     <ClInclude Include="Math\Vector\Vector4f.h" />
     <ClInclude Include="Object\Object.h" />
     <ClInclude Include="Procedural.h" />
+    <ClInclude Include="Renderer\FrameBuffer.h" />
+    <ClInclude Include="Renderer\RendererMain.h" />
     <ClInclude Include="ShaderProgram\ShaderProgram.h" />
     <ClInclude Include="Texture\Tex2D.h" />
+    <ClInclude Include="Tools\FontLoader.h" />
     <ClInclude Include="Tools\ObjectLoader.h" />
   </ItemGroup>
   <ItemGroup>
@@ -188,6 +204,9 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4.0</ShaderModel>
       <FileType>Document</FileType>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\..\Download\open_sans_26pt.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

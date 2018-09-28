@@ -20,29 +20,11 @@ out vec3 normaleye[], positioneye[], lightpositioneye[], lightdirtangent[], view
 uniform float tess_fac_min = 1.0;
 uniform float tess_fac_max = 100.0; 
 
-struct OutputPatch
-{
-    vec3 WorldPos_B030;
-    vec3 WorldPos_B021;
-    vec3 WorldPos_B012;
-    vec3 WorldPos_B003;
-    vec3 WorldPos_B102;
-    vec3 WorldPos_B201;
-    vec3 WorldPos_B300;
-    vec3 WorldPos_B210;
-    vec3 WorldPos_B120;
-    vec3 WorldPos_B111;
-    vec3 Normal[3];
-    vec2 TexCoord[3];
-};
-
-out patch OutputPatch oPatch;
-
 float GetTessLevel(float Distance0, float Distance1)
 {
-	float ratio = 4.0; // the higher this value the farther away higher detail is seen.
+	float ratio = 3.0; // the higher this value the farther away higher detail is seen.
 	
-	float l = (Distance0 + Distance1) / 2.0;
+	float l = (Distance0 + Distance1) / 3.0;
 	float mixcontrol = mix(1.0, 0.0, (l/ratio)); 
 	float tess_factor = mix(tess_fac_min, tess_fac_max, mixcontrol);
 

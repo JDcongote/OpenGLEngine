@@ -4,8 +4,8 @@
 #define TRANSLATE_RIGHT 2
 #define TRANSLATE_LEFT 3
 
-#include "../Math/Vector/Vector3f.h"
-#include "../Math/Matrix/Matrix4f.h"
+#include "../CommonHeaders.h";
+
 #include "../Math/Quaternion/Quaternion.h"
 
 #include <stdio.h>
@@ -15,7 +15,9 @@ class Camera
 {
 public:
 	Camera();
-	Camera(const Vector position, const float near, const float far, const float fov, const float width, const float height);
+	Camera(const Vector position, const float near, const float far, const float fov, const WindowDimensions win);
+
+	void set_ubo();
 
 	Vector3f get_position();
 
@@ -37,6 +39,11 @@ public:
 
 	bool should_update;
 	bool should_move_camera;
+
+	GLuint ubo_blockid = 0;
+	GLuint camera_ubo = 0;
+
+	float* camera_ubo_ptr;
 	~Camera();
 
 private:
@@ -55,12 +62,11 @@ private:
 	Quaternion q_yaw;
 	Quaternion q_orientation;
 
-	float width;
-	float height;
+	WindowDimensions window_dimensions;
 
 	float current_yaw = 0.0f;
 	float current_pitch = 0.0f;
 	float speed = 0.05f;
-	float rotation_speed = 0.05f;
+	float rotation_speed = 0.05f;	
 };
 

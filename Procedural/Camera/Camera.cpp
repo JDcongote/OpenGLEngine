@@ -6,7 +6,7 @@ Camera::Camera()
 {
 }
 
-Camera::Camera(const Vector position, const float near, const float far, const float fov, const float width, const float height)
+Camera::Camera(const Vector position, const float near, const float far, const float fov, const WindowDimensions win)
 {
 
 	//Initialize Translation matrix
@@ -25,9 +25,10 @@ Camera::Camera(const Vector position, const float near, const float far, const f
 	translation_mat.set_position(-position.x,-position.y,-position.z);
 
 	float range = tan((fov * ONE_DEG_IN_RAD) * 0.5f) * near;
-	this->width = width;
-	this->height = height;
-	float aspect = width / height;
+
+	window_dimensions = win;
+
+	float aspect = window_dimensions.width / window_dimensions.height;
 	projection_matrix.m11 = (2.0f * near) / (range * aspect + range * aspect);;
 	projection_matrix.m22 = near / range;
 	projection_matrix.m33 = -(far + near) / (far - near);
@@ -40,7 +41,21 @@ Camera::Camera(const Vector position, const float near, const float far, const f
 	view_matrix = rotation_matrix * translation_mat;
 
 	should_update = true;
-	should_move_camera = false;
+	should_move_camera = false;	
+}
+
+void Camera::set_ubo() {
+	//camera block	
+	glGenBuffers(1, &camera_ubo);
+	glBindBuffer(GL_UNIFORM_BUFFER, camera_ubo);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(float) * 32 /*two matrices of 16 components*/, NULL, GL_DYNAMIC_DRAW);
+	ubo_blockid = 0;
+	
+	glBindBufferBase(GL_UNIFORM_BUFFER, ubo_blockid, camera_ubo);
+	camera_ubo_ptr = (float*)glMapBufferRange(GL_UNIFORM_BUFFER, 0, sizeof(float) * 32, GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT);
+	std::memcpy(&camera_ubo_ptr[0], projection_matrix.get_as_array(), sizeof(float) * 16);
+	std::memcpy(&camera_ubo_ptr[16], view_matrix.get_as_array(), sizeof(float) * 16);
+	glUnmapBuffer(GL_UNIFORM_BUFFER);
 }
 
 Vector3f Camera::get_position()
@@ -63,11 +78,8 @@ Matrix4f Camera::get_projection_matrix()
 
 Matrix4f Camera::get_inverse_view_matrix()
 {
-	// View matrix inverse needs to be generated often
-	should_update = true;
-	update();
-	Matrix4f inv_view = view_matrix.inverse();
-	should_update = false;
+	// View matrix inverse needs to be generated often	
+	Matrix4f inv_view = view_matrix.inverse();	
 	return inv_view;
 }
 
@@ -123,8 +135,8 @@ void Camera::rotate_x(const float x)
 
 void Camera::translate(const int dir, const float z)
 {
-	float dx = 0; //how much we strafe on x
-	float dz = 0; //how much we walk on z
+	float dx = 0;
+	float dz = 0;
 	switch (dir)
 	{
 	case TRANSLATE_FORWARD:
@@ -167,7 +179,6 @@ void Camera::update_pitch_yaw(const float pitch, const float yaw)
 void Camera::update()
 {
 	if (should_update) {
-
 		q_pitch = Quaternion(current_pitch, 1.0f, 0.0f, 0.0f);
 		q_yaw = Quaternion(current_yaw, 0.0f, 1.0f, 0.0f);
 
@@ -179,17 +190,20 @@ void Camera::update()
 		forwards = Vector3f(view_matrix.m13, view_matrix.m23, view_matrix.m33);
 		right = Vector3f(view_matrix.m11, view_matrix.m21, view_matrix.m31);
 		up = Vector3f(view_matrix.m12, view_matrix.m22, view_matrix.m32);
+
+		std::memcpy(&camera_ubo_ptr[0], projection_matrix.get_as_array(), sizeof(float) * 16);
+		std::memcpy(&camera_ubo_ptr[16], view_matrix.get_as_array(), sizeof(float) * 16);
 	}
 }
 
 const float Camera::get_viewport_width() const
 {
-	return width;
+	return window_dimensions.width;
 }
 
 const float Camera::get_viewport_height() const
 {
-	return height;
+	return window_dimensions.height;
 }
 
 

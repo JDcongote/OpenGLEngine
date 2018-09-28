@@ -11,11 +11,14 @@
 #include "Math/Raycast/Raycaster.h"
 #include "Texture/Tex2D.h"
 #include "Object/Object.h"
+#include "GUI/Panel.h"
+#include "Renderer/RendererMain.h"
 
 class Procedural
 {
 public:
 	Log log;
+	WindowDimensions window_dimensions;
 	Procedural();
 
 	int initGL();

@@ -16,7 +16,7 @@ out mat4 view_mat, model_mat, proj_mat;
 // gl_TessCoord is location within the patch
 // (barycentric for triangles, UV for quads)
 
-float tess_multiplier = 0.03;
+float tess_multiplier = 0.01;
 
 vec3 interpolate_tesscoord_3D(vec3 v0, vec3 v1, vec3 v2){
 	 return gl_TessCoord.x * v0 + gl_TessCoord.y * v1 + gl_TessCoord.z * v2;
@@ -42,6 +42,8 @@ void main () {
 	view_mat = viewmat;
 	model_mat = modelmat;
 	proj_mat = projmat;
+
+	//normal_eye = gl_TessCoord;
 
 	float displacement = texture(height, tex_coords.xy).x;
 	pos += normal_world * displacement * tess_multiplier;
