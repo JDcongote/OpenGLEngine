@@ -19,6 +19,5 @@ void main(){
 	if(model_matrix[0][0] != 0){
 		gl_Position.xy += 1.0;
 		gl_Position = model * gl_Position;
-	}
-	
+	}	
 }

@@ -15,7 +15,8 @@ public:
 	ShaderProgram();
 	ShaderProgram(Log log);
 	void load_shader(std::string name, GLenum type);
-	void attach_and_link(GLuint program);
+	void attach_and_link();
+	void use();
 	// Keep track of this variable the rest can be deleted
 	GLuint program_index;
 	void reload_shaders();

@@ -1,25 +1,22 @@
 #version 460
-
-layout (binding = 0) uniform sampler2D tex_sampler0;
-
-layout (location = 1) out vec4 bloom;
-layout (location = 0) out vec4 frag_color;
-
+out vec4 FragColor;
+  
 in vec2 tex_coords;
 
-vec4 color_buffer0 = texture (tex_sampler0, tex_coords);
+layout (binding = 0) uniform sampler2D scene;
+layout (binding = 1) uniform sampler2D bloomBlur;
 
-const float gamma = 2.2;
+uniform float exposure;
 
-void main(){
-	
-	float brightness = dot(color_buffer0.rgb, vec3(0.8, 0.8, 0.8));
-	color_buffer0 = pow(color_buffer0, vec4(1.0 / gamma));
-	frag_color = color_buffer0;
-	vec4 bloom;
-	if(brightness > 1.0)
-        bloom = vec4(frag_color.rgb, 1.0);
-    else
-        bloom = vec4(0.0, 0.0, 0.0, 1.0);
-	bloom = vec4(1.0,0.0,1.0,1.0);
-}
+void main()
+{             
+    const float gamma = 2.2;
+    vec3 hdrColor = texture(scene, tex_coords).rgb;      
+    vec3 bloomColor = texture(bloomBlur, tex_coords).rgb;
+    hdrColor += bloomColor; // additive blending
+    // tone mapping
+    vec3 result = vec3(1.0) - exp(-hdrColor * exposure);
+    // also gamma correct while we're at it       
+    //result = pow(result, vec3(1.0 / gamma));
+    FragColor = vec4(result, 1.0);
+}  

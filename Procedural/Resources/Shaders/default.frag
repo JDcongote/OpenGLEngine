@@ -6,17 +6,14 @@ layout (binding = 1) uniform sampler2D tex_sampler1;
 layout (binding = 2) uniform sampler2D tex_sampler2;
 layout (binding = 3) uniform samplerCube tex_sampler3;
 
-
+layout (location = 0) out vec4 fragment_color;
+layout (location = 1) out vec4 bright_color;
 
 in vec2 tex_coords;
 in vec3 position_eye, normal_eye, light_position_eye, light_dir_tangent, view_dir_tangent;
 
 
 in mat4 view_mat, model_mat, proj_mat;
-
-
-
-out vec4 fragment_color;
 
 // Phong components
 float I,Id,Is,Ia;
@@ -107,4 +104,11 @@ void main() {
 	vec3 final_color = (Is + Id + Ia);
 	final_color = mix(final_color, fog_color, fog_fac);
     fragment_color = vec4(final_color, 1.0);
+
+	float brightness = dot(fragment_color.rgb, vec3(0.95, 0.95, 0.95));
+	if(brightness > 1.0)
+        bright_color = vec4(fragment_color.rgb, 1.0);
+    else
+        bright_color = vec4(0.0, 0.0, 0.0, 1.0);
+	//fragment_color = bright_color;
 }

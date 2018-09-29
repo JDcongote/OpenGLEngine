@@ -11,7 +11,14 @@ Object::Object(GLuint *vao)
 	tessellation = false;
 	point_count = 6;
 }
-//pass textures here
+
+/*
+The order for textures is
+layout (binding = 0) diffuse;
+layout (binding = 1) specular;
+layout (binding = 2) normal_map;
+layout (binding = 3) cube_map;
+*/
 Object::Object(std::string name, bool tess, const int tex_count, Tex2D ...)
 {
 	tessellation = tess;

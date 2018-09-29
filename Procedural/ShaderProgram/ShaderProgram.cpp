@@ -209,25 +209,25 @@ void ShaderProgram::load_shader(std::string name, GLenum type) {
 	}
 }
 
-void ShaderProgram::attach_and_link(GLuint program) {
+void ShaderProgram::attach_and_link() {
 	
 	if (vertex_shader.id > 0) {
-		glAttachShader(program, vertex_shader.id);
+		glAttachShader(program_index, vertex_shader.id);
 	}
 	if (geometry_shader.id > 0) {
-		glAttachShader(program, geometry_shader.id);
+		glAttachShader(program_index, geometry_shader.id);
 	}
 	if (tesscontrol_shader.id > 0) {
-		glAttachShader(program, tesscontrol_shader.id);
+		glAttachShader(program_index, tesscontrol_shader.id);
 	}
 	if (tesseval_shader.id > 0) {
-		glAttachShader(program, tesseval_shader.id);
+		glAttachShader(program_index, tesseval_shader.id);
 	}
 	if (fragment_shader.id > 0) {
-		glAttachShader(program, fragment_shader.id);
+		glAttachShader(program_index, fragment_shader.id);
 	}
 	
-	glLinkProgram(program);
+	glLinkProgram(program_index);
 	// we no longer need them, they are linked in the program now
 	if (fragment_shader.id > 0) {
 		glDeleteShader(fragment_shader.id);
@@ -246,9 +246,14 @@ void ShaderProgram::attach_and_link(GLuint program) {
 	}
 
 	// check program link errors
-	_check_link_errors(program);
-	_print_all_shader_info(program);
-	_is_valid(program);
+	_check_link_errors(program_index);
+	_print_all_shader_info(program_index);
+	_is_valid(program_index);
+}
+
+void ShaderProgram::use()
+{
+	glUseProgram(program_index);
 }
 
 //DEVELOPMENT STUFF
@@ -299,7 +304,8 @@ void ShaderProgram::reload_shaders() {
 	for (int i = 0; i < limit; i++) {
 		load_shader(new_shaders[i].name, new_shaders[i].type);
 	}
-	attach_and_link(new_program);
+	program_index = new_program;
+	attach_and_link();
 	//glLinkProgram(new_program);
 	if (_is_valid(new_program)) {
 		glDeleteProgram(program_index);

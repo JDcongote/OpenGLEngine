@@ -228,17 +228,17 @@ int Procedural::render_loop() {
 	default_shader.load_shader("default.frag", GL_FRAGMENT_SHADER);
 	default_shader.load_shader("default.tesc", GL_TESS_CONTROL_SHADER);
 	default_shader.load_shader("default.tese", GL_TESS_EVALUATION_SHADER);
-	default_shader.attach_and_link(default_shader.program_index);
+	default_shader.attach_and_link();
 
 	ShaderProgram gui_shader = ShaderProgram(log);
 	gui_shader.load_shader("gui.vert", GL_VERTEX_SHADER);
 	gui_shader.load_shader("gui.frag", GL_FRAGMENT_SHADER);
-	gui_shader.attach_and_link(gui_shader.program_index);
+	gui_shader.attach_and_link();
 
 	ShaderProgram skybox_shader = ShaderProgram(log);
 	skybox_shader.load_shader("skybox.vert", GL_VERTEX_SHADER);
 	skybox_shader.load_shader("skybox.frag", GL_FRAGMENT_SHADER);
-	skybox_shader.attach_and_link(skybox_shader.program_index);
+	skybox_shader.attach_and_link();
 
 	//the following code will be refactored to OO	
 	// LIGHT
@@ -271,25 +271,47 @@ int Procedural::render_loop() {
 	GLuint light_position = glGetUniformLocation(default_shader.program_index, "light_position");
 	GLuint camera_position = glGetUniformLocation(default_shader.program_index, "camera_position");
 
-	
-	FrameBuffer render_to_texture = FrameBuffer(window_dimensions, false, true);
-	//render_to_texture.use_custom_gui_panel(&test_panel);
-	FrameBuffer ping_pong_framebuffer1 = FrameBuffer(window_dimensions, true, false);
-	FrameBuffer ping_pong_framebuffer2 = FrameBuffer(window_dimensions, true, true);
+
+	FrameBuffer render_to_texture = FrameBuffer(window_dimensions, true, false);
 
 	//ping pong shader
-	ShaderProgram pingpong_shader = ShaderProgram();
-	pingpong_shader.load_shader("post.vert", GL_VERTEX_SHADER);
-	pingpong_shader.load_shader("Postprocess/bloom.frag", GL_FRAGMENT_SHADER);
-	pingpong_shader.attach_and_link(pingpong_shader.program_index);
-	ping_pong_framebuffer1.set_shader(pingpong_shader);
+	ShaderProgram post_shader = ShaderProgram();
+	post_shader.load_shader("post.vert", GL_VERTEX_SHADER);
+	post_shader.load_shader("post.frag", GL_FRAGMENT_SHADER);
+	post_shader.attach_and_link();
 
-	Panel ping_pong_panel_1 = Panel(256, 256, 0, 0, window_dimensions);
-	Panel ping_pong_panel_2 = Panel(256, 256, 256, 0, window_dimensions);
+	ShaderProgram bloom_shader = ShaderProgram();
+	bloom_shader.load_shader("post.vert", GL_VERTEX_SHADER);
+	bloom_shader.load_shader("Postprocess/bloom.frag", GL_FRAGMENT_SHADER);
+	bloom_shader.attach_and_link();
+	//ping_pong_framebuffer1.set_shader(pingpong_shader);
+
+	Panel ping_pong_panel_1 = Panel(300, 300, 0, 0, window_dimensions);
+	Panel ping_pong_panel_2 = Panel(512, 512, 300, 0, window_dimensions);
 	ping_pong_panel_1.panel_object.model_matrix.translate_z(-0.01f);
 	ping_pong_panel_2.panel_object.model_matrix.translate_z(-0.01f);
-	ping_pong_framebuffer1.use_custom_gui_panel(&ping_pong_panel_1);
-	ping_pong_framebuffer2.use_custom_gui_panel(&ping_pong_panel_2);
+	//ping_pong_framebuffer1.use_custom_gui_panel(&ping_pong_panel_1);
+	//ping_pong_framebuffer2.use_custom_gui_panel(&ping_pong_panel_2);
+
+	// ping-pong-framebuffer for blurring
+	unsigned int pingpongFBO[2];
+	unsigned int pingpongColorbuffers[2];
+	glGenFramebuffers(2, pingpongFBO);
+	glGenTextures(2, pingpongColorbuffers);
+	for (unsigned int i = 0; i < 2; i++)
+	{
+		glBindFramebuffer(GL_FRAMEBUFFER, pingpongFBO[i]);
+		glBindTexture(GL_TEXTURE_2D, pingpongColorbuffers[i]);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, window_dimensions.width, window_dimensions.height, 0, GL_RGB, GL_FLOAT, NULL);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE); // we clamp to the edge as the blur filter would otherwise sample repeated texture values!
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, pingpongColorbuffers[i], 0);
+		// also check if framebuffers are complete (no need for depth buffer)
+		if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+			std::cout << "Framebuffer not complete!" << std::endl;
+	}
 
 	// MAIN LOOP
 	while (!glfwWindowShouldClose(window)) {
@@ -303,7 +325,7 @@ int Procedural::render_loop() {
 		double elapsed_seconds = current_seconds - previous_seconds;
 		previous_seconds = current_seconds;
 
-		
+
 
 		//render skybox
 		glDepthMask(GL_FALSE);
@@ -334,23 +356,52 @@ int Procedural::render_loop() {
 
 		if (dev_vars.use_wireframe) {
 			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-		}		
+		}
 
 		if (dev_vars.use_framebuffers) {
 			render_to_texture.unbind();
 
-			ping_pong_framebuffer1.bind();
-			render_to_texture.render(true);
-			ping_pong_framebuffer1.unbind();
+			bool horizontal = true, first_iteration = true;
+			unsigned int amount = 10;
+			bloom_shader.use();
+			glActiveTexture(GL_TEXTURE0);
+			for (unsigned int i = 0; i < amount; i++)
+			{
+				glBindFramebuffer(GL_FRAMEBUFFER, pingpongFBO[horizontal]);
+				glUniform1i(glGetUniformLocation(bloom_shader.program_index, "horizontal"), horizontal);
+				glBindTexture(GL_TEXTURE_2D, first_iteration ? render_to_texture.fb_tex[1] : pingpongColorbuffers[!horizontal]);   // bind texture of other framebuffer (or scene if first iteration)
+				ping_pong_panel_2.render(-1);
+				horizontal = !horizontal;
+				if (first_iteration)
+					first_iteration = false;
+			}
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-			ping_pong_framebuffer1.render(false);
-			//ping_pong_framebuffer2.render(true);
+			// 3. now render floating point color buffer to 2D quad and tonemap HDR colors to default framebuffer's (clamped) color range
+			// --------------------------------------------------------------------------------------------------------------------------
+			//glBindFramebuffer(GL_FRAMEBUFFER, 0);
+			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			//shaderBloomFinal.use();
+			post_shader.use();
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, pingpongColorbuffers[0]); // 0 is the scene
+			glActiveTexture(GL_TEXTURE1);
+			glBindTexture(GL_TEXTURE_2D, pingpongColorbuffers[1]); // 1 the bright colors
+			ping_pong_panel_1.render(glGetUniformLocation(post_shader.program_index, "model_matrix"));
+
+			glActiveTexture(GL_TEXTURE0);
+			glBindTexture(GL_TEXTURE_2D, render_to_texture.fb_tex[0]);
+			glActiveTexture(GL_TEXTURE1);
+			glBindTexture(GL_TEXTURE_2D, pingpongColorbuffers[!horizontal]);
+			glUniform1f(glGetUniformLocation(post_shader.program_index, "exposure"), 1.0f);
+			//render_to_texture.render(true);
+			ping_pong_panel_2.render(glGetUniformLocation(post_shader.program_index, "model_matrix"));
 		}
 		//render gui		
-		glEnable(GL_BLEND);
+		/*glEnable(GL_BLEND);
 		glUseProgram(gui_shader.program_index);
 		//test_panel.render(glGetUniformLocation(gui_shader.program_index, "model_matrix")); // dont query uniforms always... fix this
-		glDisable(GL_BLEND);
+		glDisable(GL_BLEND);*/
 
 		glfwSwapBuffers(window);
 
